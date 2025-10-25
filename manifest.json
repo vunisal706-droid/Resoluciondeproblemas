@@ -2,34 +2,34 @@
   "name": "Problemas Matemáticos - CEIP Capitulaciones",
   "short_name": "Matemáticas",
   "description": "Plan de Resolución de Problemas para Educación Primaria",
-  "start_url": "./index.html",
+  "start_url": "/Resoluciondeproblemas/",
   "display": "standalone",
   "background_color": "#EFF6FF",
   "theme_color": "#4F46E5",
   "orientation": "any",
-  "scope": "./",
+  "scope": "/Resoluciondeproblemas/",
   "icons": [
     {
-      "src": "icons/icon-192.png",
+      "src": "/Resoluciondeproblemas/icons/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "icons/icon-512.png",
+      "src": "/Resoluciondeproblemas/icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "icons/apple-touch-icon.png",
+      "src": "/Resoluciondeproblemas/icons/apple-touch-icon.png",
       "sizes": "180x180",
       "type": "image/png"
     }
   ],
   "screenshots": [
     {
-      "src": "icons/icon-512.png",
+      "src": "/Resoluciondeproblemas/icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "form_factor": "wide"
