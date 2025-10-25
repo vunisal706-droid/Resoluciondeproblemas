@@ -9,7 +9,7 @@
     <title>Problemas Matemáticos - CEIP Capitulaciones</title>
     
     <!-- PWA Manifest -->
-    <link rel="manifest" href="manifest.json">
+    <link rel="manifest" href="./manifest.json">
     
     <!-- Apple Touch Icon -->
     <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
@@ -701,10 +701,11 @@
     </script>
     
     <script>
-        // Registrar Service Worker
+        // Registrar Service Worker - TEMPORALMENTE DESACTIVADO PARA DEBUG
+        /*
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('service-worker.js')
+                navigator.serviceWorker.register('./service-worker.js')
                     .then(registration => {
                         console.log('Service Worker registrado:', registration);
                     })
@@ -713,6 +714,8 @@
                     });
             });
         }
+        */
+        console.log('App cargando...');
     </script>
 </body>
 </html>
