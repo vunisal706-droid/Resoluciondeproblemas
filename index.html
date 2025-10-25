@@ -1,43 +1,820 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>📚 Generador de Problemas Matemáticos - Primaria</title>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Generador de Problemas Matemáticos - Primaria</title>
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-
-    <!-- Babel con preset de React (necesario para GitHub Pages) -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
     <div id="root"></div>
 
-    <!-- OJO: Aquí está la corrección de montaje con React 18 💡 -->
     <script type="text/babel" data-presets="react">
-
         const { useState, useRef, useEffect } = React;
         const { BookOpen, Calendar, Hash, Lightbulb, Check, Pencil, Eraser, Trash2, Circle } = lucide;
 
-        /* ---- TU CÓDIGO COMPLETO SIGUE IGUAL ---- */
-        /* (No fue modificado nada de la lógica ni estilos) */
-        
-        /* --- Pega aquí TODO el código original desde DrawingCanvas hasta ProblemasGenerator --- */
-        /* (ya estaba correcto, solo cambiamos la última línea) */
+        // Componente Canvas para dibujar
+        const DrawingCanvas = ({ faseId, problemaId }) => {
+            const canvasRef = useRef(null);
+            const [isDrawing, setIsDrawing] = useState(false);
+            const [tool, setTool] = useState('pencil');
+            const [color, setColor] = useState('#000000');
+            const [lineWidth, setLineWidth] = useState(3);
 
-        /* COPIADO: */
-        // --- INICIO DEL CÓDIGO ORIGINAL ---
-        /* ... EL CÓDIGO DE TUS COMPONENTES SE MANTIENE ... */
-        /* (Lo omito aquí para que no recortes accidentalmente al pegar, sigue usando tu archivo original) */
-        // --- FIN DEL CÓDIGO ORIGINAL ---
+            useEffect(() => {
+                const canvas = canvasRef.current;
+                if (!canvas) return;
 
-        // MONTAJE CORREGIDO PARA REACT 18:
+                const ctx = canvas.getContext('2d');
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+                ctx.fillStyle = 'white';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+            }, []);
+
+            const getCoordinates = (e, canvas) => {
+                const rect = canvas.getBoundingClientRect();
+                const scaleX = canvas.width / rect.width;
+                const scaleY = canvas.height / rect.height;
+
+                if (e.type.includes('mouse')) {
+                    return {
+                        x: (e.clientX - rect.left) * scaleX,
+                        y: (e.clientY - rect.top) * scaleY
+                    };
+                } else {
+                    return {
+                        x: (e.touches[0].clientX - rect.left) * scaleX,
+                        y: (e.touches[0].clientY - rect.top) * scaleY
+                    };
+                }
+            };
+
+            const startDrawing = (e) => {
+                e.preventDefault();
+                const canvas = canvasRef.current;
+                const ctx = canvas.getContext('2d');
+                const { x, y } = getCoordinates(e, canvas);
+
+                setIsDrawing(true);
+                ctx.beginPath();
+                ctx.moveTo(x, y);
+            };
+
+            const draw = (e) => {
+                if (!isDrawing) return;
+                e.preventDefault();
+
+                const canvas = canvasRef.current;
+                const ctx = canvas.getContext('2d');
+                const { x, y } = getCoordinates(e, canvas);
+
+                if (tool === 'eraser') {
+                    ctx.strokeStyle = 'white';
+                    ctx.lineWidth = lineWidth * 3;
+                } else {
+                    ctx.strokeStyle = color;
+                    ctx.lineWidth = lineWidth;
+                }
+
+                ctx.lineTo(x, y);
+                ctx.stroke();
+            };
+
+            const stopDrawing = () => {
+                setIsDrawing(false);
+            };
+
+            const clearCanvas = () => {
+                const canvas = canvasRef.current;
+                const ctx = canvas.getContext('2d');
+                ctx.fillStyle = 'white';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+            };
+
+            const colors = ['#000000', '#FF0000', '#0000FF', '#00AA00', '#FFA500', '#800080'];
+            const widths = [2, 3, 5, 8];
+
+            return (
+                <div className="space-y-3">
+                    {/* Herramientas */}
+                    <div className="flex flex-wrap gap-2 items-center bg-gray-100 p-3 rounded-lg">
+                        {/* Herramienta */}
+                        <div className="flex gap-2">
+                            <button
+                                onClick={() => setTool('pencil')}
+                                className={`p-2 rounded-lg transition-colors ${
+                                    tool === 'pencil' 
+                                        ? 'bg-indigo-600 text-white' 
+                                        : 'bg-white text-gray-700 hover:bg-gray-200'
+                                }`}
+                                title="Lápiz"
+                            >
+                                <Pencil size={20} />
+                            </button>
+                            <button
+                                onClick={() => setTool('eraser')}
+                                className={`p-2 rounded-lg transition-colors ${
+                                    tool === 'eraser' 
+                                        ? 'bg-indigo-600 text-white' 
+                                        : 'bg-white text-gray-700 hover:bg-gray-200'
+                                }`}
+                                title="Borrador"
+                            >
+                                <Eraser size={20} />
+                            </button>
+                            <button
+                                onClick={clearCanvas}
+                                className="p-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors"
+                                title="Limpiar todo"
+                            >
+                                <Trash2 size={20} />
+                            </button>
+                        </div>
+
+                        {/* Colores */}
+                        <div className="flex gap-2 ml-2 flex-wrap">
+                            {colors.map(c => (
+                                <button
+                                    key={c}
+                                    onClick={() => { setColor(c); setTool('pencil'); }}
+                                    className={`w-8 h-8 rounded-full border-2 transition-transform ${
+                                        color === c && tool === 'pencil' 
+                                            ? 'border-gray-800 scale-110' 
+                                            : 'border-gray-300'
+                                    }`}
+                                    style={{ backgroundColor: c }}
+                                    title="Color"
+                                />
+                            ))}
+                        </div>
+
+                        {/* Grosor */}
+                        <div className="flex gap-2 ml-2 flex-wrap">
+                            {widths.map(w => (
+                                <button
+                                    key={w}
+                                    onClick={() => { setLineWidth(w); setTool('pencil'); }}
+                                    className={`p-2 rounded-lg transition-colors flex items-center justify-center ${
+                                        lineWidth === w && tool === 'pencil'
+                                            ? 'bg-indigo-600 text-white'
+                                            : 'bg-white text-gray-700 hover:bg-gray-200'
+                                    }`}
+                                    title={`Grosor ${w}px`}
+                                    style={{ width: '40px', height: '40px' }}
+                                >
+                                    <div 
+                                        style={{ 
+                                            width: `${w * 2}px`, 
+                                            height: `${w * 2}px`, 
+                                            backgroundColor: 'currentColor',
+                                            borderRadius: '50%'
+                                        }}
+                                    />
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Canvas */}
+                    <canvas
+                        ref={canvasRef}
+                        width={800}
+                        height={400}
+                        onMouseDown={startDrawing}
+                        onMouseMove={draw}
+                        onMouseUp={stopDrawing}
+                        onMouseLeave={stopDrawing}
+                        onTouchStart={startDrawing}
+                        onTouchMove={draw}
+                        onTouchEnd={stopDrawing}
+                        className="border-2 border-gray-300 rounded-lg cursor-crosshair w-full touch-none bg-white"
+                        style={{ maxWidth: '100%', height: 'auto', minHeight: '300px' }}
+                    />
+                </div>
+            );
+        };
+
+        // Componente principal
+        const ProblemasGenerator = () => {
+            const [curso, setCurso] = useState('1');
+            const [mes, setMes] = useState('octubre');
+            const [numProblemas, setNumProblemas] = useState(1);
+            const [problemasGenerados, setProblemasGenerados] = useState([]);
+            const [mostrarSoluciones, setMostrarSoluciones] = useState({});
+            const [respuestasAlumno, setRespuestasAlumno] = useState({});
+
+            const meses = [
+                'octubre', 'noviembre', 'diciembre', 'enero',
+                'febrero', 'marzo', 'abril', 'mayo', 'junio'
+            ];
+
+            // Base de datos simplificada de problemas
+            const tiposProblemas = {
+                '1': {
+                    octubre: [
+                        { tipo: 'Conteo y comparación', ejemplo: '¿Cuántos lápices hay si tienes {n1} rojos y {n2} azules?', n1: [3, 4, 5, 6], n2: [2, 3, 4, 5], op: 'suma' },
+                        { tipo: 'Sumas con objetos', ejemplo: 'Si tengo {n1} manzanas y me dan {n2} más, ¿cuántas tengo en total?', n1: [2, 3, 4, 5], n2: [3, 4, 5, 6], op: 'suma' },
+                        { tipo: 'Cuenta juguetes', ejemplo: 'En una caja hay {n1} coches y {n2} pelotas. ¿Cuántos juguetes hay?', n1: [4, 5, 6], n2: [2, 3, 4], op: 'suma' }
+                    ],
+                    noviembre: [
+                        { tipo: 'Ubicación espacial', ejemplo: 'Coloca {n1} juguetes dentro de la caja y {n2} fuera. ¿Cuántos juguetes tienes en total?', n1: [3, 4, 5, 6], n2: [2, 3, 4], op: 'suma' },
+                        { tipo: 'Sumas y restas hasta 10', ejemplo: 'Tienes {n1} pelotas y te dan {n2} más. ¿Cuántas tienes ahora?', n1: [5, 6, 7, 8], n2: [2, 3, 4], op: 'suma' },
+                        { tipo: 'Quitar objetos', ejemplo: 'Tienes {n1} caramelos y te comes {n2}. ¿Cuántos te quedan?', n1: [8, 9, 10], n2: [2, 3, 4], op: 'resta' }
+                    ],
+                    diciembre: [
+                        { tipo: 'Comparación', ejemplo: '¿Qué grupo tiene más: {n1} caramelos o {n2} caramelos?', n1: [6, 7, 8], n2: [4, 5, 6], op: 'comparar' },
+                        { tipo: 'Ordenación', ejemplo: 'Ordena estos números de menor a mayor: {n1}, {n2}, {n3}', n1: [3, 5, 7, 8], n2: [1, 4, 6, 9], n3: [2, 8, 9, 10], op: 'ordenar' },
+                        { tipo: 'Mayor o menor', ejemplo: '¿Cuál es mayor, {n1} o {n2}?', n1: [5, 7, 9], n2: [3, 6, 8], op: 'comparar' }
+                    ],
+                    enero: [
+                        { tipo: 'Sumas y restas hasta 20', ejemplo: 'Si tienes {n1} caramelos y te comes {n2}, ¿cuántos te quedan?', n1: [15, 16, 18, 20], n2: [3, 4, 5, 6], op: 'resta' },
+                        { tipo: 'Patrones', ejemplo: 'Completa la serie: 2, 4, 6, ___, ___', n1: [8], n2: [10], op: 'patron' },
+                        { tipo: 'Sumar más', ejemplo: 'Pedro tiene {n1} cromos y le dan {n2} más. ¿Cuántos tiene?', n1: [10, 12, 14], n2: [5, 6, 7], op: 'suma' }
+                    ],
+                    febrero: [
+                        { tipo: 'Sumas y restas visuales', ejemplo: 'Si tienes {n1} lápices y pierdes {n2}, ¿cuántos lápices te quedan?', n1: [8, 9, 10, 11], n2: [3, 4, 5], op: 'resta' },
+                        { tipo: 'Conteo hasta 20', ejemplo: 'Cuenta cuántos objetos hay en total si tienes {n1} y {n2}', n1: [7, 8, 9, 10], n2: [5, 6, 7, 8], op: 'suma' },
+                        { tipo: 'Objetos perdidos', ejemplo: 'Tenías {n1} globos y se te escapan {n2}. ¿Cuántos te quedan?', n1: [15, 17, 19], n2: [4, 6, 8], op: 'resta' }
+                    ],
+                    marzo: [
+                        { tipo: 'Clasificación', ejemplo: 'Tienes {n1} juguetes rojos y {n2} azules. ¿Cuántos juguetes tienes en total?', n1: [6, 7, 8], n2: [5, 6, 7], op: 'suma' },
+                        { tipo: 'Estimación', ejemplo: '¿Cuántas manzanas crees que hay aproximadamente en una cesta que tiene más de {n1}?', n1: [5, 7, 8, 10], op: 'estimar' },
+                        { tipo: 'Grupos', ejemplo: 'En un grupo hay {n1} niños y en otro {n2}. ¿Cuántos hay en total?', n1: [7, 8, 9], n2: [4, 5, 6], op: 'suma' }
+                    ],
+                    abril: [
+                        { tipo: 'Sumas manipulativas', ejemplo: 'Tienes {n1} bloques y te dan {n2} más. ¿Cuántos bloques tienes ahora?', n1: [6, 7, 8], n2: [3, 4, 5], op: 'suma' },
+                        { tipo: 'Comparación', ejemplo: '¿Quién tiene más lápices, Ana con {n1} o Pedro con {n2}?', n1: [5, 6, 7], n2: [7, 8, 9], op: 'comparar' },
+                        { tipo: 'Juntar colecciones', ejemplo: 'María tiene {n1} pegatinas y Luis {n2}. ¿Cuántas tienen entre los dos?', n1: [8, 9, 10], n2: [6, 7, 8], op: 'suma' }
+                    ],
+                    mayo: [
+                        { tipo: 'Ubicación espacial', ejemplo: 'Pon {n1} pelotas dentro de la caja y {n2} fuera. ¿Cuántas pelotas hay en total?', n1: [4, 5, 6], n2: [3, 4, 5], op: 'suma' },
+                        { tipo: 'Series numéricas', ejemplo: 'Completa la serie: 1, 3, 5, ___, ___', n1: [7], n2: [9], op: 'patron' },
+                        { tipo: 'Contar todo', ejemplo: 'Si hay {n1} pájaros en un árbol y llegan {n2} más, ¿cuántos hay?', n1: [6, 7, 8], n2: [4, 5, 6], op: 'suma' }
+                    ],
+                    junio: [
+                        { tipo: 'Sumas hasta 20', ejemplo: 'Tienes {n1} caramelos y te comes {n2}. ¿Cuántos caramelos te quedan?', n1: [12, 15, 18, 20], n2: [4, 5, 6, 7], op: 'resta' },
+                        { tipo: 'Estimación', ejemplo: '¿Cuántas fichas hay aproximadamente en el tarro si ves más de {n1}?', n1: [8, 10, 12], op: 'estimar' },
+                        { tipo: 'Problemas mixtos', ejemplo: 'Ana tenía {n1} flores, regaló {n2} y luego le dieron {n3} más. ¿Cuántas tiene ahora?', n1: [10, 12], n2: [3, 4], n3: [5, 6], op: 'mixto' }
+                    ]
+                },
+                '2': {
+                    octubre: [
+                        { tipo: 'Sumas y restas hasta 20', ejemplo: 'Si tienes {n1} manzanas y regalas {n2}, ¿cuántas te quedan?', n1: [14, 16, 18, 20], n2: [6, 7, 8, 9], op: 'resta' },
+                        { tipo: 'Comparación', ejemplo: '¿Es mayor {n1} o {n2}?', n1: [18, 19, 25], n2: [12, 15, 20], op: 'comparar' }
+                    ],
+                    noviembre: [
+                        { tipo: 'Dobles y mitades', ejemplo: 'Si tienes {n1} galletas y las partes por la mitad, ¿cuántas mitades tienes?', n1: [6, 8, 10, 12], op: 'doble' },
+                        { tipo: 'Multiplicación inicial', ejemplo: 'Si hay {n1} cajas con {n2} juguetes cada una, ¿cuántos juguetes hay en total?', n1: [3, 4, 5], n2: [3, 4, 5], op: 'multi' }
+                    ],
+                    diciembre: [
+                        { tipo: 'Dinero', ejemplo: 'Tienes {n1} céntimos y compras un chicle por {n2} céntimos. ¿Cuánto te queda?', n1: [30, 40, 50, 60], n2: [15, 20, 25], op: 'resta' },
+                        { tipo: 'Sumas hasta 50', ejemplo: 'Si tienes {n1} caramelos y te comes {n2}, ¿cuántos te quedan?', n1: [25, 30, 35, 40], n2: [10, 12, 15], op: 'resta' }
+                    ],
+                    enero: [
+                        { tipo: 'Multiplicación', ejemplo: 'Si cada día comes {n1} frutas durante {n2} días, ¿cuántas frutas has comido en total?', n1: [3, 4, 5], n2: [4, 5, 6], op: 'multi' },
+                        { tipo: 'División', ejemplo: 'Reparte {n1} lápices entre {n2} amigos. ¿Cuántos lápices tiene cada uno?', n1: [12, 15, 18, 20], n2: [3, 4, 5], op: 'div' }
+                    ],
+                    febrero: [
+                        { tipo: 'Medidas', ejemplo: 'Si una cuerda mide {n1} metros y otra mide {n2} metros, ¿cuál es más larga?', n1: [2, 3, 4], n2: [3, 4, 5], op: 'comparar' },
+                        { tipo: 'Tiempo', ejemplo: 'Si son las {n1} en punto y pasan {n2} horas, ¿qué hora será?', n1: [3, 4, 5, 6], n2: [2, 3, 4], op: 'suma' }
+                    ],
+                    marzo: [
+                        { tipo: 'Fracciones', ejemplo: 'Si tienes una pizza y la divides en {n1} partes iguales, ¿cuántas partes tendrás?', n1: [4, 6, 8], op: 'fraccion' },
+                        { tipo: 'Decenas', ejemplo: 'Si tienes {n1} canicas y pierdes {n2}, ¿cuántas te quedan?', n1: [40, 50, 60], n2: [10, 20, 25], op: 'resta' }
+                    ],
+                    abril: [
+                        { tipo: 'Multiplicación cotidiana', ejemplo: 'Si hay {n1} cajas con {n2} manzanas cada una, ¿cuántas manzanas hay en total?', n1: [5, 6, 7], n2: [6, 7, 8], op: 'multi' },
+                        { tipo: 'Dinero', ejemplo: 'Si compras {n1} juguetes de {n2} céntimos cada uno, ¿cuánto pagarás?', n1: [3, 4, 5], n2: [20, 25, 30], op: 'multi' }
+                    ],
+                    mayo: [
+                        { tipo: 'Medidas', ejemplo: 'Si un jugo tiene 1 litro y bebes {n1} ml, ¿cuánto queda en ml?', n1: [500, 250, 750], op: 'resta' },
+                        { tipo: 'Fracciones', ejemplo: 'Si partes una tarta en {n1} partes iguales y comes una, ¿qué fracción te queda?', n1: [2, 4, 8], op: 'fraccion' }
+                    ],
+                    junio: [
+                        { tipo: 'Geometría', ejemplo: 'Dibuja un triángulo y cuenta cuántos lados tiene', op: 'geometria' },
+                        { tipo: 'Patrones', ejemplo: 'Completa la serie: 2, 4, 6, ___, ___', n1: [8], n2: [10], op: 'patron' }
+                    ]
+                },
+                '3': {
+                    octubre: [
+                        { tipo: 'Sumas y restas hasta 100', ejemplo: 'Tienes {n1} puntos y pierdes {n2}. ¿Cuántos puntos te quedan?', n1: [75, 85, 90, 95], n2: [35, 40, 45, 50], op: 'resta' },
+                        { tipo: 'Multiplicación tablas 1-5', ejemplo: 'Si tienes {n1} cajas con {n2} libros cada una, ¿cuántos libros hay en total?', n1: [4, 5, 6], n2: [3, 4, 5], op: 'multi' }
+                    ],
+                    noviembre: [
+                        { tipo: 'División reparto', ejemplo: 'Reparte {n1} caramelos entre {n2} niños. ¿Cuántos le toca a cada uno?', n1: [20, 24, 30], n2: [4, 5, 6], op: 'div' },
+                        { tipo: 'Tiempo', ejemplo: 'Si hoy es lunes, ¿qué día será en {n1} días?', n1: [4, 5, 6, 7], op: 'tiempo' }
+                    ],
+                    diciembre: [
+                        { tipo: 'Fracciones', ejemplo: 'Si partes una barra de chocolate en {n1} y te comes {n2}, ¿qué fracción queda?', n1: [4, 8], n2: [2, 3], op: 'fraccion' },
+                        { tipo: 'Dinero', ejemplo: 'Si tienes {n1} monedas de 2 euros, ¿cuánto dinero tienes en total?', n1: [5, 6, 7, 8], n2: [2], op: 'multi' }
+                    ],
+                    enero: [
+                        { tipo: 'Multiplicación tablas 6-10', ejemplo: 'Si hay {n1} canastas y en cada una hay {n2} pelotas, ¿cuántas pelotas hay en total?', n1: [6, 7, 8], n2: [4, 5, 6], op: 'multi' },
+                        { tipo: 'División grandes', ejemplo: 'Reparte {n1} caramelos entre {n2} amigos. ¿Cuántos recibe cada uno?', n1: [60, 72, 81], n2: [6, 8, 9], op: 'div' }
+                    ],
+                    febrero: [
+                        { tipo: 'Fracciones cotidianas', ejemplo: 'Si compartes una pizza entre {n1} personas y comes {n2} partes, ¿qué fracción has comido?', n1: [5, 6, 8], n2: [2, 3], op: 'fraccion' },
+                        { tipo: 'Estimación', ejemplo: '¿Cuánto crees que pesa una manzana aproximadamente en gramos?', op: 'estimar' }
+                    ],
+                    marzo: [
+                        { tipo: 'Perímetro', ejemplo: 'Calcula el perímetro de un cuadrado con lados de {n1} cm', n1: [5, 6, 7, 8], op: 'perimetro' },
+                        { tipo: 'Tiempo', ejemplo: '¿Cuántas semanas hay en {n1} meses aproximadamente?', n1: [2, 3, 4], op: 'multi' }
+                    ],
+                    abril: [
+                        { tipo: 'Decimales', ejemplo: 'Si compras una barra de pan por {n1} €, ¿cuánto pagarás por {n2} barras?', n1: [1.25, 1.50, 1.75], n2: [3, 4, 5], op: 'multi' },
+                        { tipo: 'Dinero', ejemplo: 'Si compras {n1} juguetes por {n2} céntimos cada uno, ¿cuánto pagas en total?', n1: [3, 4, 5], n2: [20, 25, 30], op: 'multi' }
+                    ],
+                    mayo: [
+                        { tipo: 'Multiplicación y división', ejemplo: 'Si tienes {n1} caramelos y los divides entre {n2} amigos, ¿cuántos caramelos recibe cada uno?', n1: [48, 56, 64], n2: [4, 8], op: 'div' },
+                        { tipo: 'Estimación', ejemplo: '¿Cuántos metros crees que mide tu mesa?', op: 'estimar' }
+                    ],
+                    junio: [
+                        { tipo: 'Fracciones y decimales', ejemplo: 'Si tienes {n1} litros de jugo y bebes 1/2 litro, ¿cuánto te queda?', n1: [3.5, 4.5], op: 'resta' },
+                        { tipo: 'Patrones', ejemplo: 'Completa la serie: 5, 10, 15, ___, ___', n1: [20], n2: [25], op: 'patron' }
+                    ]
+                },
+                '4': {
+                    octubre: [
+                        { tipo: 'Operaciones hasta 1000', ejemplo: 'Tienes {n1} puntos y pierdes {n2}. ¿Cuántos te quedan?', n1: [860, 920, 750], n2: [350, 420, 280], op: 'resta' },
+                        { tipo: 'Multiplicación 2 cifras', ejemplo: 'Si compras {n1} cuadernos a {n2} € cada uno, ¿cuánto pagas en total?', n1: [5, 6, 7], n2: [12, 15, 18], op: 'multi' }
+                    ],
+                    noviembre: [
+                        { tipo: 'División 2 cifras', ejemplo: 'Si tienes {n1} caramelos y los repartes entre {n2} niños, ¿cuántos caramelos recibe cada uno?', n1: [120, 144, 180], n2: [6, 8, 9], op: 'div' },
+                        { tipo: 'Tiempo', ejemplo: 'Si son las {n1}:{n2} y pasan 45 minutos, ¿qué hora será?', n1: [3, 4, 5], n2: ['15', '30', '45'], op: 'tiempo' }
+                    ],
+                    diciembre: [
+                        { tipo: 'Fracciones equivalentes', ejemplo: 'Simplifica la fracción {n1}/{n2}', n1: [4, 6, 8], n2: [8, 12, 16], op: 'fraccion' },
+                        { tipo: 'Dinero', ejemplo: 'Si compras un libro por {n1} € y pagas con {n2} €, ¿cuánto te devuelven?', n1: [18, 24, 32], n2: [50], op: 'resta' }
+                    ],
+                    enero: [
+                        { tipo: 'Área', ejemplo: 'Calcula el área de un rectángulo de {n1} cm por {n2} cm', n1: [8, 10, 12], n2: [5, 6, 7], op: 'area' },
+                        { tipo: 'División con resto', ejemplo: 'Divide {n1} entre {n2}. ¿Cuál es el cociente y el resto?', n1: [47, 53, 61], n2: [5, 6, 7], op: 'div' }
+                    ],
+                    febrero: [
+                        { tipo: 'Decimales', ejemplo: 'Si compras {n1} kg de naranjas a {n2} € el kilo, ¿cuánto pagas?', n1: [2.5, 3.5, 4.5], n2: [1.80, 2.20, 2.50], op: 'multi' },
+                        { tipo: 'Porcentajes', ejemplo: '¿Cuánto es el {n1}% de {n2}?', n1: [25, 50, 75], n2: [40, 80, 100], op: 'porcentaje' }
+                    ],
+                    marzo: [
+                        { tipo: 'Geometría', ejemplo: 'Calcula el perímetro de un rectángulo de {n1} cm por {n2} cm', n1: [12, 15, 18], n2: [7, 8, 9], op: 'perimetro' },
+                        { tipo: 'Medidas', ejemplo: 'Convierte {n1} metros a centímetros', n1: [3, 5, 7], op: 'conversion' }
+                    ],
+                    abril: [
+                        { tipo: 'Proporcionalidad', ejemplo: 'Si {n1} lápices cuestan {n2} €, ¿cuánto costarán {n3} lápices?', n1: [3, 4, 5], n2: [6, 8, 10], n3: [9, 12, 15], op: 'proporcion' },
+                        { tipo: 'Tiempo', ejemplo: 'Si un tren sale a las {n1}:{n2} y tarda 2 horas y media, ¿a qué hora llega?', n1: [8, 10, 11], n2: ['15', '30', '45'], op: 'tiempo' }
+                    ],
+                    mayo: [
+                        { tipo: 'Problemas combinados', ejemplo: 'Compras {n1} libros a {n2} € cada uno y pagas con {n3} €. ¿Cuánto te devuelven?', n1: [3, 4, 5], n2: [8, 12, 15], n3: [50, 100], op: 'combinado' },
+                        { tipo: 'Volumen', ejemplo: 'Si un cubo tiene arista de {n1} cm, ¿cuál es su volumen?', n1: [4, 5, 6], op: 'volumen' }
+                    ],
+                    junio: [
+                        { tipo: 'Estadística', ejemplo: 'Las notas de la clase son: {n1}, {n2}, {n3}. ¿Cuál es la media?', n1: [7, 8], n2: [9, 10], n3: [6, 7], op: 'media' },
+                        { tipo: 'Probabilidad', ejemplo: 'En una bolsa hay {n1} bolas rojas y {n2} azules. ¿Qué probabilidad hay de sacar una roja?', n1: [3, 4, 5], n2: [6, 7, 8], op: 'probabilidad' }
+                    ]
+                },
+                '5': {
+                    octubre: [
+                        { tipo: 'Operaciones combinadas', ejemplo: 'Calcula: {n1} + {n2} × {n3}', n1: [15, 20, 25], n2: [3, 4, 5], n3: [5, 6, 7], op: 'combinado' },
+                        { tipo: 'Fracciones', ejemplo: 'Suma {n1}/{n2} + {n3}/{n4}', n1: [1, 2], n2: [2, 3], n3: [1, 1], n4: [4, 6], op: 'fraccion' }
+                    ],
+                    noviembre: [
+                        { tipo: 'Decimales', ejemplo: 'Multiplica {n1} × {n2}', n1: [3.5, 4.2, 5.1], n2: [2.4, 3.1, 2.5], op: 'multi' },
+                        { tipo: 'Porcentajes', ejemplo: 'Calcula el {n1}% de {n2}', n1: [15, 25, 30], n2: [120, 200, 180], op: 'porcentaje' }
+                    ],
+                    diciembre: [
+                        { tipo: 'Área triángulo', ejemplo: 'Calcula el área de un triángulo con base {n1} cm y altura {n2} cm', n1: [8, 10, 12], n2: [6, 8, 10], op: 'area' },
+                        { tipo: 'Proporcionalidad', ejemplo: 'Si {n1} kg cuestan {n2} €, ¿cuánto costarán {n3} kg?', n1: [3, 4, 5], n2: [9, 12, 15], n3: [7, 9, 11], op: 'proporcion' }
+                    ],
+                    enero: [
+                        { tipo: 'Velocidad', ejemplo: 'Un coche viaja a {n1} km/h durante {n2} horas. ¿Qué distancia recorre?', n1: [80, 100, 120], n2: [2.5, 3.5, 4], op: 'velocidad' },
+                        { tipo: 'Divisibilidad', ejemplo: '¿Es {n1} divisible por {n2}?', n1: [72, 96, 108], n2: [8, 9, 12], op: 'divisibilidad' }
+                    ],
+                    febrero: [
+                        { tipo: 'Fracciones complejas', ejemplo: 'Multiplica {n1}/{n2} × {n3}/{n4}', n1: [2, 3], n2: [3, 4], n3: [4, 5], n4: [5, 6], op: 'fraccion' },
+                        { tipo: 'Números negativos', ejemplo: 'Calcula: {n1} - {n2}', n1: [15, 20], n2: [25, 30], op: 'negativos' }
+                    ],
+                    marzo: [
+                        { tipo: 'Círculo', ejemplo: 'Si un círculo tiene radio {n1} cm, ¿cuál es su área? (usa π = 3.14)', n1: [5, 6, 7], op: 'circulo' },
+                        { tipo: 'Escalas', ejemplo: 'En un mapa, 1 cm representa {n1} km. ¿Cuántos km son {n2} cm del mapa?', n1: [50, 100], n2: [3, 4], op: 'escala' }
+                    ],
+                    abril: [
+                        { tipo: 'Potencias', ejemplo: 'Calcula {n1}²', n1: [12, 15, 18], op: 'potencia' },
+                        { tipo: 'Raíz cuadrada', ejemplo: '¿Cuál es la raíz cuadrada de {n1}?', n1: [64, 100, 144], op: 'raiz' }
+                    ],
+                    mayo: [
+                        { tipo: 'Ecuaciones simples', ejemplo: 'Resuelve: x + {n1} = {n2}', n1: [15, 20, 25], n2: [35, 45, 50], op: 'ecuacion' },
+                        { tipo: 'Media y moda', ejemplo: 'Calcula la media de: {n1}, {n2}, {n3}, {n4}', n1: [12, 15], n2: [18, 20], n3: [14, 16], n4: [10, 12], op: 'estadistica' }
+                    ],
+                    junio: [
+                        { tipo: 'Probabilidad', ejemplo: 'Si lanzas un dado, ¿qué probabilidad hay de sacar un número par?', op: 'probabilidad' },
+                        { tipo: 'Interés simple', ejemplo: 'Si depositas {n1} € al {n2}% anual, ¿cuánto tendrás en 1 año?', n1: [500, 1000], n2: [4, 5], op: 'interes' }
+                    ]
+                },
+                '6': {
+                    octubre: [
+                        { tipo: 'Operaciones complejas', ejemplo: 'Calcula: ({n1} + {n2}) × {n3} - {n4}', n1: [25, 30], n2: [15, 20], n3: [3, 4], n4: [20, 30], op: 'combinado' },
+                        { tipo: 'Fracciones algebraicas', ejemplo: 'Simplifica: ({n1}/{n2}) + ({n3}/{n4})', n1: [3, 4], n2: [4, 5], n3: [2, 3], n4: [5, 6], op: 'fraccion' }
+                    ],
+                    noviembre: [
+                        { tipo: 'Porcentajes avanzados', ejemplo: 'Un artículo de {n1} € tiene un descuento del {n2}%. ¿Cuál es el precio final?', n1: [80, 120], n2: [15, 25], op: 'porcentaje' },
+                        { tipo: 'Proporcionalidad inversa', ejemplo: 'Si {n1} obreros tardan {n2} días, ¿cuántos días tardarán {n3} obreros?', n1: [6, 8], n2: [12, 15], n3: [4, 5], op: 'proporcion' }
+                    ],
+                    diciembre: [
+                        { tipo: 'Volumen cilindro', ejemplo: 'Calcula el volumen de un cilindro con radio {n1} cm y altura {n2} cm (π = 3.14)', n1: [4, 5], n2: [10, 12], op: 'volumen' },
+                        { tipo: 'Teorema de Pitágoras', ejemplo: 'Los catetos de un triángulo miden {n1} cm y {n2} cm. ¿Cuánto mide la hipotenusa?', n1: [3, 5], n2: [4, 12], op: 'pitagoras' }
+                    ],
+                    enero: [
+                        { tipo: 'Ecuaciones', ejemplo: 'Resuelve: {n1}x + {n2} = {n3}', n1: [3, 4], n2: [15, 20], n3: [30, 40], op: 'ecuacion' },
+                        { tipo: 'Velocidad media', ejemplo: 'Un tren recorre {n1} km en {n2} horas. ¿Cuál es su velocidad media?', n1: [240, 360], n2: [3, 4], op: 'velocidad' }
+                    ],
+                    febrero: [
+                        { tipo: 'Números enteros', ejemplo: 'Calcula: {n1} - ({n2}) + ({n3})', n1: [15, 20], n2: [-8, -10], n3: [-5, -7], op: 'enteros' },
+                        { tipo: 'Potencias', ejemplo: 'Calcula: {n1}³', n1: [4, 5], op: 'potencia' }
+                    ],
+                    marzo: [
+                        { tipo: 'Área figuras compuestas', ejemplo: 'Calcula el área de un rectángulo de {n1} × {n2} cm con un semicírculo de radio {n3} cm adosado', n1: [10, 12], n2: [6, 8], n3: [3, 4], op: 'area' },
+                        { tipo: 'Escalas', ejemplo: 'En un mapa a escala 1:{n1}, ¿cuántos km reales son {n2} cm del mapa?', n1: [100000, 200000], n2: [5, 8], op: 'escala' }
+                    ],
+                    abril: [
+                        { tipo: 'Sistema de ecuaciones', ejemplo: 'Resuelve: x + y = {n1} y x - y = {n2}', n1: [20, 30], n2: [4, 6], op: 'sistema' },
+                        { tipo: 'Función lineal', ejemplo: 'Si y = {n1}x + {n2}, ¿cuánto vale y cuando x = {n3}?', n1: [2, 3], n2: [5, 7], n3: [4, 5], op: 'funcion' }
+                    ],
+                    mayo: [
+                        { tipo: 'Estadística avanzada', ejemplo: 'Calcula la mediana de: {n1}, {n2}, {n3}, {n4}, {n5}', n1: [12, 15], n2: [18, 20], n3: [14, 16], n4: [10, 12], n5: [22, 25], op: 'estadistica' },
+                        { tipo: 'Combinatoria', ejemplo: 'De cuántas formas se pueden ordenar {n1} personas?', n1: [4, 5], op: 'combinatoria' }
+                    ],
+                    junio: [
+                        { tipo: 'Probabilidad compuesta', ejemplo: 'Al lanzar dos dados, ¿qué probabilidad hay de que sumen {n1}?', n1: [7, 8], op: 'probabilidad' },
+                        { tipo: 'Interés compuesto', ejemplo: 'Si inviertes {n1} € al {n2}% anual, ¿cuánto tendrás en 2 años?', n1: [1000, 2000], n2: [5, 6], op: 'interes' }
+                    ]
+                }
+            };
+
+            const generarNumero = (array) => {
+                return array[Math.floor(Math.random() * array.length)];
+            };
+
+            const generarEnunciado = (plantilla) => {
+                let enunciado = plantilla.ejemplo;
+                const numeros = {};
+
+                if (plantilla.n1) {
+                    numeros.n1 = generarNumero(plantilla.n1);
+                    enunciado = enunciado.replace('{n1}', numeros.n1);
+                }
+                if (plantilla.n2) {
+                    numeros.n2 = generarNumero(plantilla.n2);
+                    enunciado = enunciado.replace('{n2}', numeros.n2);
+                }
+                if (plantilla.n3) {
+                    numeros.n3 = generarNumero(plantilla.n3);
+                    enunciado = enunciado.replace('{n3}', numeros.n3);
+                }
+                if (plantilla.n4) {
+                    numeros.n4 = generarNumero(plantilla.n4);
+                    enunciado = enunciado.replace('{n4}', numeros.n4);
+                }
+                if (plantilla.n5) {
+                    numeros.n5 = generarNumero(plantilla.n5);
+                    enunciado = enunciado.replace('{n5}', numeros.n5);
+                }
+
+                return { enunciado, numeros, tipo: plantilla.tipo, op: plantilla.op };
+            };
+
+            const calcularSolucion = (numeros, op) => {
+                const { n1, n2, n3, n4 } = numeros;
+
+                switch (op) {
+                    case 'suma':
+                        return { resultado: n1 + n2, explicacion: `Sumamos ${n1} + ${n2}` };
+                    case 'resta':
+                        return { resultado: n1 - n2, explicacion: `Restamos ${n1} - ${n2}` };
+                    case 'multi':
+                        return { resultado: n1 * (n2 || 1), explicacion: `Multiplicamos ${n1} × ${n2 || 1}` };
+                    case 'div':
+                        return { resultado: Math.floor(n1 / n2), explicacion: `Dividimos ${n1} ÷ ${n2}` };
+                    case 'comparar':
+                        return { resultado: n1 > n2 ? `${n1} es mayor` : `${n2} es mayor`, explicacion: `Comparamos ${n1} y ${n2}` };
+                    case 'patron':
+                        return { resultado: `${n1}, ${n2}`, explicacion: 'Seguimos el patrón de la serie' };
+                    case 'ordenar':
+                        const nums = [n1, n2, n3].sort((a, b) => a - b);
+                        return { resultado: nums.join(', '), explicacion: 'Ordenamos de menor a mayor' };
+                    case 'fraccion':
+                        if (n2) {
+                            return { resultado: `${n2 - n1}/${n2}`, explicacion: `De ${n2} partes quedan ${n2 - n1}` };
+                        }
+                        return { resultado: `${n1} partes`, explicacion: `Dividimos en ${n1} partes iguales` };
+                    case 'area':
+                        return { resultado: n1 * n2, explicacion: `Área = base × altura = ${n1} × ${n2}` };
+                    case 'perimetro':
+                        if (n2) {
+                            return { resultado: 2 * (n1 + n2), explicacion: `Perímetro = 2 × (${n1} + ${n2})` };
+                        }
+                        return { resultado: 4 * n1, explicacion: `Perímetro = 4 × ${n1}` };
+                    case 'porcentaje':
+                        return { resultado: (n1 * n2) / 100, explicacion: `${n1}% de ${n2} = (${n1} × ${n2}) ÷ 100` };
+                    case 'mixto':
+                        return { resultado: n1 - n2 + n3, explicacion: `${n1} - ${n2} + ${n3}` };
+                    case 'doble':
+                        return { resultado: n1 * 2, explicacion: `El doble de ${n1} es ${n1 * 2}` };
+                    case 'tiempo':
+                        return { resultado: 'Respuesta basada en el cálculo', explicacion: 'Suma las horas o días indicados' };
+                    case 'conversion':
+                        return { resultado: n1 * 100, explicacion: `${n1} metros = ${n1 * 100} centímetros` };
+                    case 'volumen':
+                        return { resultado: n1 * n1 * n1, explicacion: `Volumen = ${n1}³ = ${n1 * n1 * n1}` };
+                    case 'velocidad':
+                        return { resultado: n1 * n2, explicacion: `Distancia = velocidad × tiempo = ${n1} × ${n2}` };
+                    case 'proporcion':
+                        return { resultado: (n2 * n3) / n1, explicacion: `Regla de tres: ${n1}→${n2}, ${n3}→?` };
+                    case 'combinado':
+                        return { resultado: n3 - (n1 * n2), explicacion: `${n3} - (${n1} × ${n2})` };
+                    case 'estimar':
+                    case 'geometria':
+                    case 'divisibilidad':
+                    case 'probabilidad':
+                        return { resultado: 'Respuesta abierta', explicacion: 'Piensa en la respuesta más apropiada según el enunciado' };
+                    default:
+                        return { resultado: 'Respuesta abierta', explicacion: 'Resuelve según lo que has aprendido' };
+                }
+            };
+
+            const handleGenerar = () => {
+                const plantillas = tiposProblemas[curso]?.[mes] || [];
+                if (plantillas.length === 0) {
+                    alert('No hay problemas disponibles para esta combinación');
+                    return;
+                }
+
+                const nuevosProblemas = [];
+                for (let i = 0; i < numProblemas; i++) {
+                    const plantilla = plantillas[Math.floor(Math.random() * plantillas.length)];
+                    const { enunciado, numeros, tipo, op } = generarEnunciado(plantilla);
+                    const { resultado, explicacion } = calcularSolucion(numeros, op);
+
+                    nuevosProblemas.push({
+                        enunciado,
+                        tipo,
+                        solucion: resultado.toString(),
+                        explicacion
+                    });
+                }
+
+                setProblemasGenerados(nuevosProblemas);
+                setMostrarSoluciones({});
+                setRespuestasAlumno({});
+            };
+
+            const toggleSolucion = (index) => {
+                setMostrarSoluciones(prev => ({
+                    ...prev,
+                    [index]: !prev[index]
+                }));
+            };
+
+            const handleRespuestaChange = (problemaIndex, fase, valor) => {
+                setRespuestasAlumno(prev => ({
+                    ...prev,
+                    [`${problemaIndex}-${fase}`]: valor
+                }));
+            };
+
+            return (
+                <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 py-8 px-4">
+                    <div className="max-w-7xl mx-auto">
+                        {/* Header */}
+                        <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl shadow-2xl p-8 mb-8 text-white">
+                            <h1 className="text-4xl font-bold mb-3 text-center">
+                                📚 Generador de Problemas Matemáticos
+                            </h1>
+                            <p className="text-center text-xl opacity-90">
+                                Educación Primaria - Curso 2025/2026
+                            </p>
+                            <p className="text-center text-sm mt-2 opacity-75">
+                                🎯 Con 5 fases de resolución y pizarra digital interactiva
+                            </p>
+                        </div>
+
+                        {/* Controles */}
+                        <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                                {/* Selector de Curso */}
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                        <BookOpen size={16} className="inline mr-1" />
+                                        Curso
+                                    </label>
+                                    <select
+                                        value={curso}
+                                        onChange={(e) => setCurso(e.target.value)}
+                                        className="w-full p-3 border-2 border-indigo-200 rounded-lg focus:border-indigo-500 focus:outline-none"
+                                    >
+                                        <option value="1">1º Primaria</option>
+                                        <option value="2">2º Primaria</option>
+                                        <option value="3">3º Primaria</option>
+                                        <option value="4">4º Primaria</option>
+                                        <option value="5">5º Primaria</option>
+                                        <option value="6">6º Primaria</option>
+                                    </select>
+                                </div>
+
+                                {/* Selector de Mes */}
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                        <Calendar size={16} className="inline mr-1" />
+                                        Mes
+                                    </label>
+                                    <select
+                                        value={mes}
+                                        onChange={(e) => setMes(e.target.value)}
+                                        className="w-full p-3 border-2 border-indigo-200 rounded-lg focus:border-indigo-500 focus:outline-none"
+                                    >
+                                        {meses.map(m => (
+                                            <option key={m} value={m}>
+                                                {m.charAt(0).toUpperCase() + m.slice(1)}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                {/* Selector de Número de Problemas */}
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                        <Hash size={16} className="inline mr-1" />
+                                        Nº Problemas
+                                    </label>
+                                    <select
+                                        value={numProblemas}
+                                        onChange={(e) => setNumProblemas(parseInt(e.target.value))}
+                                        className="w-full p-3 border-2 border-indigo-200 rounded-lg focus:border-indigo-500 focus:outline-none"
+                                    >
+                                        <option value={1}>1 problema</option>
+                                        <option value={2}>2 problemas</option>
+                                        <option value={3}>3 problemas</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            {/* Botón Generar */}
+                            <button
+                                onClick={handleGenerar}
+                                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2"
+                            >
+                                <Lightbulb size={20} />
+                                Generar Problemas
+                            </button>
+                        </div>
+
+                        {/* Problemas Generados */}
+                        {problemasGenerados.length > 0 && (
+                            <div className="space-y-8">
+                                {problemasGenerados.map((problema, index) => (
+                                    <div key={index} className="bg-white rounded-xl shadow-lg overflow-hidden">
+                                        {/* Enunciado del problema */}
+                                        <div className="bg-gradient-to-r from-indigo-500 to-purple-500 p-6">
+                                            <div className="flex items-start gap-3">
+                                                <div className="bg-white text-indigo-700 font-bold rounded-full w-10 h-10 flex items-center justify-center flex-shrink-0 text-lg">
+                                                    {index + 1}
+                                                </div>
+                                                <div className="flex-1">
+                                                    <span className="inline-block bg-white/20 text-white text-xs font-semibold px-3 py-1 rounded-full mb-2">
+                                                        {problema.tipo}
+                                                    </span>
+                                                    <p className="text-xl text-white leading-relaxed font-medium">
+                                                        {problema.enunciado}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Fases de resolución */}
+                                        <div className="p-6 space-y-6">
+                                            {/* FASE 1: COMPRENDER */}
+                                            <div className="border-2 border-blue-300 rounded-lg p-5 bg-blue-50">
+                                                <h3 className="text-lg font-bold text-blue-900 mb-3 flex items-center gap-2">
+                                                    <span className="bg-blue-500 text-white rounded-full w-7 h-7 flex items-center justify-center text-sm">1</span>
+                                                    📖 COMPRENDER
+                                                </h3>
+                                                <p className="text-blue-700 text-sm mb-2">Leer el problema, anotar datos y pregunta</p>
+                                                <textarea
+                                                    value={respuestasAlumno[`${index}-comprender`] || ''}
+                                                    onChange={(e) => handleRespuestaChange(index, 'comprender', e.target.value)}
+                                                    placeholder="Escribe aquí los datos importantes y qué te preguntan..."
+                                                    className="w-full p-3 border-2 border-blue-300 rounded-lg focus:border-blue-500 focus:outline-none min-h-[100px] resize-y"
+                                                />
+                                            </div>
+
+                                            {/* FASE 2: PLANIFICAR */}
+                                            <div className="border-2 border-green-300 rounded-lg p-5 bg-green-50">
+                                                <h3 className="text-lg font-bold text-green-900 mb-3 flex items-center gap-2">
+                                                    <span className="bg-green-500 text-white rounded-full w-7 h-7 flex items-center justify-center text-sm">2</span>
+                                                    📋 PLANIFICAR
+                                                </h3>
+                                                <p className="text-green-700 text-sm mb-3">Elegir cómo resolverlo (estrategia)</p>
+                                                <DrawingCanvas faseId="planificar" problemaId={index} />
+                                            </div>
+
+                                            {/* FASE 3: EJECUTAR */}
+                                            <div className="border-2 border-orange-300 rounded-lg p-5 bg-orange-50">
+                                                <h3 className="text-lg font-bold text-orange-900 mb-3 flex items-center gap-2">
+                                                    <span className="bg-orange-500 text-white rounded-full w-7 h-7 flex items-center justify-center text-sm">3</span>
+                                                    ✏️ EJECUTAR
+                                                </h3>
+                                                <p className="text-orange-700 text-sm mb-3">Hacer los cálculos o pasos</p>
+                                                <DrawingCanvas faseId="ejecutar" problemaId={index} />
+                                            </div>
+
+                                            {/* FASE 4: VERIFICAR */}
+                                            <div className="border-2 border-purple-300 rounded-lg p-5 bg-purple-50">
+                                                <h3 className="text-lg font-bold text-purple-900 mb-3 flex items-center gap-2">
+                                                    <span className="bg-purple-500 text-white rounded-full w-7 h-7 flex items-center justify-center text-sm">4</span>
+                                                    ✅ VERIFICAR
+                                                </h3>
+                                                <p className="text-purple-700 text-sm mb-3">Revisar si la respuesta tiene sentido</p>
+                                                <DrawingCanvas faseId="verificar" problemaId={index} />
+                                            </div>
+
+                                            {/* FASE 5: SOLUCIÓN FINAL */}
+                                            <div className="border-2 border-pink-300 rounded-lg p-5 bg-pink-50">
+                                                <h3 className="text-lg font-bold text-pink-900 mb-3 flex items-center gap-2">
+                                                    <span className="bg-pink-500 text-white rounded-full w-7 h-7 flex items-center justify-center text-sm">5</span>
+                                                    🎯 SOLUCIÓN FINAL
+                                                </h3>
+                                                <p className="text-pink-700 text-sm mb-2">Escribir el resultado definitivo</p>
+                                                <textarea
+                                                    value={respuestasAlumno[`${index}-solucion`] || ''}
+                                                    onChange={(e) => handleRespuestaChange(index, 'solucion', e.target.value)}
+                                                    placeholder="Escribe aquí tu respuesta final completa..."
+                                                    className="w-full p-3 border-2 border-pink-300 rounded-lg focus:border-pink-500 focus:outline-none min-h-[80px] resize-y"
+                                                />
+                                            </div>
+                                        </div>
+
+                                        {/* Botón de Solución */}
+                                        <div className="p-6 pt-0">
+                                            <button
+                                                onClick={() => toggleSolucion(index)}
+                                                className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2"
+                                            >
+                                                <Check size={20} />
+                                                {mostrarSoluciones[index] ? 'Ocultar' : 'Ver'} Solución del Profesor
+                                            </button>
+
+                                            {/* Solución */}
+                                            {mostrarSoluciones[index] && (
+                                                <div className="mt-4 p-5 bg-green-50 border-2 border-green-200 rounded-lg">
+                                                    <div className="mb-3">
+                                                        <h3 className="text-green-900 font-bold text-lg mb-2 flex items-center gap-2">
+                                                            <Lightbulb size={20} />
+                                                            Explicación:
+                                                        </h3>
+                                                        <p className="text-green-800 leading-relaxed">
+                                                            {problema.explicacion}
+                                                        </p>
+                                                    </div>
+                                                    <div className="pt-3 border-t-2 border-green-200">
+                                                        <h3 className="text-green-900 font-bold text-lg mb-2 flex items-center gap-2">
+                                                            <Check size={20} />
+                                                            Solución:
+                                                        </h3>
+                                                        <p className="text-green-800 font-semibold text-xl">
+                                                            {problema.solucion}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+
+                        {/* Mensaje inicial */}
+                        {problemasGenerados.length === 0 && (
+                            <div className="bg-white rounded-xl shadow-lg p-12 text-center">
+                                <Lightbulb size={64} className="mx-auto text-indigo-300 mb-4" />
+                                <p className="text-gray-600 text-lg mb-2">
+                                    Selecciona el curso, mes y número de problemas
+                                </p>
+                                <p className="text-gray-500">
+                                    Luego haz clic en "Generar Problemas" para comenzar
+                                </p>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        };
+
+        // Renderizar la aplicación
         const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<ProblemasGenerator />);
+root.render(<ProblemasGenerator />);
     </script>
 </body>
 </html>
