@@ -3,741 +3,191 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>📚 Generador de Problemas Matemáticos - Primaria</title>
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <title>📚 Generador de Problemas Matemáticos</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
-<body>
-    <div id="root"></div>
+<body class="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 min-h-screen">
+    <div class="max-w-7xl mx-auto py-8 px-4">
+        <!-- Header -->
+        <div class="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl shadow-2xl p-8 mb-8 text-white">
+            <h1 class="text-4xl font-bold mb-3 text-center">📚 Generador de Problemas Matemáticos</h1>
+            <p class="text-center text-xl opacity-90">Educación Primaria - Curso 2025/2026</p>
+        </div>
 
-    <script type="text/babel">
-        const { useState, useRef, useEffect } = React;
-        const { BookOpen, Calendar, Hash, Lightbulb, Check, Pencil, Eraser, Trash2 } = lucide;
-
-        const DrawingCanvas = ({ faseId, problemaId }) => {
-            const canvasRef = useRef(null);
-            const [isDrawing, setIsDrawing] = useState(false);
-            const [tool, setTool] = useState('pencil');
-            const [color, setColor] = useState('#000000');
-            const [lineWidth, setLineWidth] = useState(3);
-
-            useEffect(() => {
-                const canvas = canvasRef.current;
-                if (!canvas) return;
-
-                const ctx = canvas.getContext('2d');
-                ctx.lineCap = 'round';
-                ctx.lineJoin = 'round';
-                ctx.fillStyle = 'white';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-            }, []);
-
-            const getCoordinates = (e, canvas) => {
-                const rect = canvas.getBoundingClientRect();
-                const scaleX = canvas.width / rect.width;
-                const scaleY = canvas.height / rect.height;
-
-                if (e.type.includes('mouse')) {
-                    return {
-                        x: (e.clientX - rect.left) * scaleX,
-                        y: (e.clientY - rect.top) * scaleY
-                    };
-                } else {
-                    return {
-                        x: (e.touches[0].clientX - rect.left) * scaleX,
-                        y: (e.touches[0].clientY - rect.top) * scaleY
-                    };
-                }
-            };
-
-            const startDrawing = (e) => {
-                e.preventDefault();
-                const canvas = canvasRef.current;
-                const ctx = canvas.getContext('2d');
-                const { x, y } = getCoordinates(e, canvas);
-
-                setIsDrawing(true);
-                ctx.beginPath();
-                ctx.moveTo(x, y);
-            };
-
-            const draw = (e) => {
-                if (!isDrawing) return;
-                e.preventDefault();
-
-                const canvas = canvasRef.current;
-                const ctx = canvas.getContext('2d');
-                const { x, y } = getCoordinates(e, canvas);
-
-                if (tool === 'eraser') {
-                    ctx.strokeStyle = 'white';
-                    ctx.lineWidth = lineWidth * 3;
-                } else {
-                    ctx.strokeStyle = color;
-                    ctx.lineWidth = lineWidth;
-                }
-
-                ctx.lineTo(x, y);
-                ctx.stroke();
-            };
-
-            const stopDrawing = () => {
-                setIsDrawing(false);
-            };
-
-            const clearCanvas = () => {
-                const canvas = canvasRef.current;
-                const ctx = canvas.getContext('2d');
-                ctx.fillStyle = 'white';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-            };
-
-            const colors = ['#000000', '#FF0000', '#0000FF', '#00AA00', '#FFA500', '#800080'];
-            const widths = [2, 3, 5, 8];
-
-            return (
-                <div className="space-y-3">
-                    <div className="flex flex-wrap gap-2 items-center bg-gray-100 p-3 rounded-lg">
-                        <div className="flex gap-2">
-                            <button
-                                onClick={() => setTool('pencil')}
-                                className={`p-2 rounded-lg transition-colors ${
-                                    tool === 'pencil' 
-                                        ? 'bg-indigo-600 text-white' 
-                                        : 'bg-white text-gray-700 hover:bg-gray-200'
-                                }`}
-                                title="Lápiz"
-                            >
-                                <Pencil size={20} />
-                            </button>
-                            <button
-                                onClick={() => setTool('eraser')}
-                                className={`p-2 rounded-lg transition-colors ${
-                                    tool === 'eraser' 
-                                        ? 'bg-indigo-600 text-white' 
-                                        : 'bg-white text-gray-700 hover:bg-gray-200'
-                                }`}
-                                title="Borrador"
-                            >
-                                <Eraser size={20} />
-                            </button>
-                            <button
-                                onClick={clearCanvas}
-                                className="p-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors"
-                                title="Limpiar todo"
-                            >
-                                <Trash2 size={20} />
-                            </button>
-                        </div>
-
-                        <div className="flex gap-2 ml-2 flex-wrap">
-                            {colors.map(c => (
-                                <button
-                                    key={c}
-                                    onClick={() => { setColor(c); setTool('pencil'); }}
-                                    className={`w-8 h-8 rounded-full border-2 transition-transform ${
-                                        color === c && tool === 'pencil' 
-                                            ? 'border-gray-800 scale-110' 
-                                            : 'border-gray-300'
-                                    }`}
-                                    style={{ backgroundColor: c }}
-                                    title="Color"
-                                />
-                            ))}
-                        </div>
-
-                        <div className="flex gap-2 ml-2 flex-wrap">
-                            {widths.map(w => (
-                                <button
-                                    key={w}
-                                    onClick={() => { setLineWidth(w); setTool('pencil'); }}
-                                    className={`p-2 rounded-lg transition-colors flex items-center justify-center ${
-                                        lineWidth === w && tool === 'pencil'
-                                            ? 'bg-indigo-600 text-white'
-                                            : 'bg-white text-gray-700 hover:bg-gray-200'
-                                    }`}
-                                    title={`Grosor ${w}px`}
-                                    style={{ width: '40px', height: '40px' }}
-                                >
-                                    <div 
-                                        style={{ 
-                                            width: `${w * 2}px`, 
-                                            height: `${w * 2}px`, 
-                                            backgroundColor: 'currentColor',
-                                            borderRadius: '50%'
-                                        }}
-                                    />
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-
-                    <canvas
-                        ref={canvasRef}
-                        width={800}
-                        height={400}
-                        onMouseDown={startDrawing}
-                        onMouseMove={draw}
-                        onMouseUp={stopDrawing}
-                        onMouseLeave={stopDrawing}
-                        onTouchStart={startDrawing}
-                        onTouchMove={draw}
-                        onTouchEnd={stopDrawing}
-                        className="border-2 border-gray-300 rounded-lg cursor-crosshair w-full touch-none bg-white"
-                        style={{ maxWidth: '100%', height: 'auto', minHeight: '300px' }}
-                    />
+        <!-- Controles -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Curso</label>
+                    <select id="curso" class="w-full p-3 border-2 border-indigo-200 rounded-lg">
+                        <option value="1">1º Primaria</option>
+                        <option value="2">2º Primaria</option>
+                        <option value="3">3º Primaria</option>
+                        <option value="4">4º Primaria</option>
+                        <option value="5">5º Primaria</option>
+                        <option value="6">6º Primaria</option>
+                    </select>
                 </div>
-            );
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Mes</label>
+                    <select id="mes" class="w-full p-3 border-2 border-indigo-200 rounded-lg">
+                        <option value="octubre">Octubre</option>
+                        <option value="noviembre">Noviembre</option>
+                        <option value="diciembre">Diciembre</option>
+                        <option value="enero">Enero</option>
+                        <option value="febrero">Febrero</option>
+                        <option value="marzo">Marzo</option>
+                        <option value="abril">Abril</option>
+                        <option value="mayo">Mayo</option>
+                        <option value="junio">Junio</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Nº Problemas</label>
+                    <select id="numProblemas" class="w-full p-3 border-2 border-indigo-200 rounded-lg">
+                        <option value="1">1 problema</option>
+                        <option value="2">2 problemas</option>
+                        <option value="3">3 problemas</option>
+                    </select>
+                </div>
+            </div>
+            <button onclick="generarProblemas()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors">
+                💡 Generar Problemas
+            </button>
+        </div>
+
+        <!-- Contenedor de problemas -->
+        <div id="problemas"></div>
+
+        <!-- Mensaje inicial -->
+        <div id="mensajeInicial" class="bg-white rounded-xl shadow-lg p-12 text-center">
+            <div class="text-indigo-300 text-6xl mb-4">💡</div>
+            <p class="text-gray-600 text-lg mb-2">Selecciona el curso, mes y número de problemas</p>
+            <p class="text-gray-500">Luego haz clic en "Generar Problemas" para comenzar</p>
+        </div>
+    </div>
+
+    <script>
+        const tiposProblemas = {
+            '1': {
+                octubre: [
+                    { tipo: 'Conteo', plantilla: '¿Cuántos lápices hay si tienes {n1} rojos y {n2} azules?', n1: [3,4,5,6], n2: [2,3,4,5], op: 'suma' },
+                    { tipo: 'Sumas', plantilla: 'Si tengo {n1} manzanas y me dan {n2} más, ¿cuántas tengo?', n1: [2,3,4,5], n2: [3,4,5,6], op: 'suma' }
+                ],
+                noviembre: [
+                    { tipo: 'Restas', plantilla: 'Tienes {n1} caramelos y te comes {n2}. ¿Cuántos te quedan?', n1: [8,9,10], n2: [2,3,4], op: 'resta' }
+                ],
+                diciembre: [
+                    { tipo: 'Comparación', plantilla: '¿Cuál es mayor, {n1} o {n2}?', n1: [5,7,9], n2: [3,6,8], op: 'comparar' }
+                ]
+            },
+            '2': {
+                octubre: [
+                    { tipo: 'Restas hasta 20', plantilla: 'Si tienes {n1} manzanas y regalas {n2}, ¿cuántas te quedan?', n1: [14,16,18,20], n2: [6,7,8,9], op: 'resta' }
+                ],
+                noviembre: [
+                    { tipo: 'Multiplicación', plantilla: 'Si hay {n1} cajas con {n2} juguetes cada una, ¿cuántos hay?', n1: [3,4,5], n2: [3,4,5], op: 'multi' }
+                ]
+            },
+            '3': {
+                octubre: [
+                    { tipo: 'Restas hasta 100', plantilla: 'Tienes {n1} puntos y pierdes {n2}. ¿Cuántos te quedan?', n1: [75,85,90,95], n2: [35,40,45,50], op: 'resta' }
+                ],
+                noviembre: [
+                    { tipo: 'División', plantilla: 'Reparte {n1} caramelos entre {n2} niños. ¿Cuántos cada uno?', n1: [20,24,30], n2: [4,5,6], op: 'div' }
+                ]
+            }
         };
 
-        const ProblemasGenerator = () => {
-            const [curso, setCurso] = useState('1');
-            const [mes, setMes] = useState('octubre');
-            const [numProblemas, setNumProblemas] = useState(1);
-            const [problemasGenerados, setProblemasGenerados] = useState([]);
-            const [mostrarSoluciones, setMostrarSoluciones] = useState({});
-            const [respuestasAlumno, setRespuestasAlumno] = useState({});
+        function random(arr) {
+            return arr[Math.floor(Math.random() * arr.length)];
+        }
 
-            const meses = [
-                'octubre', 'noviembre', 'diciembre', 'enero',
-                'febrero', 'marzo', 'abril', 'mayo', 'junio'
-            ];
+        function calcular(n1, n2, op) {
+            switch(op) {
+                case 'suma': return { r: n1 + n2, e: `Sumamos ${n1} + ${n2} = ${n1+n2}` };
+                case 'resta': return { r: n1 - n2, e: `Restamos ${n1} - ${n2} = ${n1-n2}` };
+                case 'multi': return { r: n1 * n2, e: `Multiplicamos ${n1} × ${n2} = ${n1*n2}` };
+                case 'div': return { r: Math.floor(n1/n2), e: `Dividimos ${n1} ÷ ${n2} = ${Math.floor(n1/n2)}` };
+                case 'comparar': return { r: n1 > n2 ? `${n1} es mayor` : `${n2} es mayor`, e: `Comparamos ${n1} y ${n2}` };
+                default: return { r: '?', e: 'Resuelve según lo aprendido' };
+            }
+        }
 
-            const tiposProblemas = {
-                '1': {
-                    octubre: [
-                        { tipo: 'Conteo y comparación', ejemplo: '¿Cuántos lápices hay si tienes {n1} rojos y {n2} azules?', n1: [3, 4, 5, 6], n2: [2, 3, 4, 5], op: 'suma' },
-                        { tipo: 'Sumas con objetos', ejemplo: 'Si tengo {n1} manzanas y me dan {n2} más, ¿cuántas tengo en total?', n1: [2, 3, 4, 5], n2: [3, 4, 5, 6], op: 'suma' }
-                    ],
-                    noviembre: [
-                        { tipo: 'Ubicación espacial', ejemplo: 'Coloca {n1} juguetes dentro de la caja y {n2} fuera. ¿Cuántos juguetes tienes en total?', n1: [3, 4, 5, 6], n2: [2, 3, 4], op: 'suma' },
-                        { tipo: 'Quitar objetos', ejemplo: 'Tienes {n1} caramelos y te comes {n2}. ¿Cuántos te quedan?', n1: [8, 9, 10], n2: [2, 3, 4], op: 'resta' }
-                    ],
-                    diciembre: [
-                        { tipo: 'Comparación', ejemplo: '¿Qué grupo tiene más: {n1} caramelos o {n2} caramelos?', n1: [6, 7, 8], n2: [4, 5, 6], op: 'comparar' },
-                        { tipo: 'Mayor o menor', ejemplo: '¿Cuál es mayor, {n1} o {n2}?', n1: [5, 7, 9], n2: [3, 6, 8], op: 'comparar' }
-                    ],
-                    enero: [
-                        { tipo: 'Sumas y restas hasta 20', ejemplo: 'Si tienes {n1} caramelos y te comes {n2}, ¿cuántos te quedan?', n1: [15, 16, 18, 20], n2: [3, 4, 5, 6], op: 'resta' },
-                        { tipo: 'Patrones', ejemplo: 'Completa la serie: 2, 4, 6, ___, ___', n1: [8], n2: [10], op: 'patron' }
-                    ],
-                    febrero: [
-                        { tipo: 'Conteo hasta 20', ejemplo: 'Cuenta cuántos objetos hay en total si tienes {n1} y {n2}', n1: [7, 8, 9, 10], n2: [5, 6, 7, 8], op: 'suma' },
-                        { tipo: 'Objetos perdidos', ejemplo: 'Tenías {n1} globos y se te escapan {n2}. ¿Cuántos te quedan?', n1: [15, 17, 19], n2: [4, 6, 8], op: 'resta' }
-                    ],
-                    marzo: [
-                        { tipo: 'Clasificación', ejemplo: 'Tienes {n1} juguetes rojos y {n2} azules. ¿Cuántos juguetes tienes en total?', n1: [6, 7, 8], n2: [5, 6, 7], op: 'suma' }
-                    ],
-                    abril: [
-                        { tipo: 'Sumas manipulativas', ejemplo: 'Tienes {n1} bloques y te dan {n2} más. ¿Cuántos bloques tienes ahora?', n1: [6, 7, 8], n2: [3, 4, 5], op: 'suma' }
-                    ],
-                    mayo: [
-                        { tipo: 'Series numéricas', ejemplo: 'Completa la serie: 1, 3, 5, ___, ___', n1: [7], n2: [9], op: 'patron' }
-                    ],
-                    junio: [
-                        { tipo: 'Sumas hasta 20', ejemplo: 'Tienes {n1} caramelos y te comes {n2}. ¿Cuántos caramelos te quedan?', n1: [12, 15, 18, 20], n2: [4, 5, 6, 7], op: 'resta' }
-                    ]
-                },
-                '2': {
-                    octubre: [
-                        { tipo: 'Sumas y restas hasta 20', ejemplo: 'Si tienes {n1} manzanas y regalas {n2}, ¿cuántas te quedan?', n1: [14, 16, 18, 20], n2: [6, 7, 8, 9], op: 'resta' }
-                    ],
-                    noviembre: [
-                        { tipo: 'Multiplicación inicial', ejemplo: 'Si hay {n1} cajas con {n2} juguetes cada una, ¿cuántos juguetes hay en total?', n1: [3, 4, 5], n2: [3, 4, 5], op: 'multi' }
-                    ],
-                    diciembre: [
-                        { tipo: 'Dinero', ejemplo: 'Tienes {n1} céntimos y compras un chicle por {n2} céntimos. ¿Cuánto te queda?', n1: [30, 40, 50, 60], n2: [15, 20, 25], op: 'resta' }
-                    ],
-                    enero: [
-                        { tipo: 'Multiplicación', ejemplo: 'Si cada día comes {n1} frutas durante {n2} días, ¿cuántas frutas has comido en total?', n1: [3, 4, 5], n2: [4, 5, 6], op: 'multi' }
-                    ],
-                    febrero: [
-                        { tipo: 'Medidas', ejemplo: 'Si una cuerda mide {n1} metros y otra mide {n2} metros, ¿cuál es más larga?', n1: [2, 3, 4], n2: [3, 4, 5], op: 'comparar' }
-                    ],
-                    marzo: [
-                        { tipo: 'Fracciones', ejemplo: 'Si tienes una pizza y la divides en {n1} partes iguales, ¿cuántas partes tendrás?', n1: [4, 6, 8], op: 'fraccion' }
-                    ],
-                    abril: [
-                        { tipo: 'Multiplicación cotidiana', ejemplo: 'Si hay {n1} cajas con {n2} manzanas cada una, ¿cuántas manzanas hay en total?', n1: [5, 6, 7], n2: [6, 7, 8], op: 'multi' }
-                    ],
-                    mayo: [
-                        { tipo: 'Medidas', ejemplo: 'Si un jugo tiene 1 litro y bebes {n1} ml, ¿cuánto queda en ml?', n1: [500, 250, 750], op: 'resta' }
-                    ],
-                    junio: [
-                        { tipo: 'Patrones', ejemplo: 'Completa la serie: 2, 4, 6, ___, ___', n1: [8], n2: [10], op: 'patron' }
-                    ]
-                },
-                '3': {
-                    octubre: [
-                        { tipo: 'Sumas y restas hasta 100', ejemplo: 'Tienes {n1} puntos y pierdes {n2}. ¿Cuántos puntos te quedan?', n1: [75, 85, 90, 95], n2: [35, 40, 45, 50], op: 'resta' }
-                    ],
-                    noviembre: [
-                        { tipo: 'División reparto', ejemplo: 'Reparte {n1} caramelos entre {n2} niños. ¿Cuántos le toca a cada uno?', n1: [20, 24, 30], n2: [4, 5, 6], op: 'div' }
-                    ],
-                    diciembre: [
-                        { tipo: 'Fracciones', ejemplo: 'Si partes una barra de chocolate en {n1} y te comes {n2}, ¿qué fracción queda?', n1: [4, 8], n2: [2, 3], op: 'fraccion' }
-                    ],
-                    enero: [
-                        { tipo: 'Multiplicación tablas 6-10', ejemplo: 'Si hay {n1} canastas y en cada una hay {n2} pelotas, ¿cuántas pelotas hay en total?', n1: [6, 7, 8], n2: [4, 5, 6], op: 'multi' }
-                    ],
-                    febrero: [
-                        { tipo: 'Fracciones cotidianas', ejemplo: 'Si compartes una pizza entre {n1} personas y comes {n2} partes, ¿qué fracción has comido?', n1: [5, 6, 8], n2: [2, 3], op: 'fraccion' }
-                    ],
-                    marzo: [
-                        { tipo: 'Perímetro', ejemplo: 'Calcula el perímetro de un cuadrado con lados de {n1} cm', n1: [5, 6, 7, 8], op: 'perimetro' }
-                    ],
-                    abril: [
-                        { tipo: 'Decimales', ejemplo: 'Si compras una barra de pan por {n1} €, ¿cuánto pagarás por {n2} barras?', n1: [1.25, 1.50, 1.75], n2: [3, 4, 5], op: 'multi' }
-                    ],
-                    mayo: [
-                        { tipo: 'Multiplicación y división', ejemplo: 'Si tienes {n1} caramelos y los divides entre {n2} amigos, ¿cuántos caramelos recibe cada uno?', n1: [48, 56, 64], n2: [4, 8], op: 'div' }
-                    ],
-                    junio: [
-                        { tipo: 'Patrones', ejemplo: 'Completa la serie: 5, 10, 15, ___, ___', n1: [20], n2: [25], op: 'patron' }
-                    ]
-                },
-                '4': {
-                    octubre: [
-                        { tipo: 'Operaciones hasta 1000', ejemplo: 'Tienes {n1} puntos y pierdes {n2}. ¿Cuántos te quedan?', n1: [860, 920, 750], n2: [350, 420, 280], op: 'resta' }
-                    ],
-                    noviembre: [
-                        { tipo: 'División 2 cifras', ejemplo: 'Si tienes {n1} caramelos y los repartes entre {n2} niños, ¿cuántos caramelos recibe cada uno?', n1: [120, 144, 180], n2: [6, 8, 9], op: 'div' }
-                    ],
-                    diciembre: [
-                        { tipo: 'Dinero', ejemplo: 'Si compras un libro por {n1} € y pagas con {n2} €, ¿cuánto te devuelven?', n1: [18, 24, 32], n2: [50], op: 'resta' }
-                    ],
-                    enero: [
-                        { tipo: 'Área', ejemplo: 'Calcula el área de un rectángulo de {n1} cm por {n2} cm', n1: [8, 10, 12], n2: [5, 6, 7], op: 'area' }
-                    ],
-                    febrero: [
-                        { tipo: 'Decimales', ejemplo: 'Si compras {n1} kg de naranjas a {n2} € el kilo, ¿cuánto pagas?', n1: [2.5, 3.5, 4.5], n2: [1.80, 2.20, 2.50], op: 'multi' }
-                    ],
-                    marzo: [
-                        { tipo: 'Geometría', ejemplo: 'Calcula el perímetro de un rectángulo de {n1} cm por {n2} cm', n1: [12, 15, 18], n2: [7, 8, 9], op: 'perimetro' }
-                    ],
-                    abril: [
-                        { tipo: 'Proporcionalidad', ejemplo: 'Si {n1} lápices cuestan {n2} €, ¿cuánto costarán {n3} lápices?', n1: [3, 4, 5], n2: [6, 8, 10], n3: [9, 12, 15], op: 'proporcion' }
-                    ],
-                    mayo: [
-                        { tipo: 'Problemas combinados', ejemplo: 'Compras {n1} libros a {n2} € cada uno y pagas con {n3} €. ¿Cuánto te devuelven?', n1: [3, 4, 5], n2: [8, 12, 15], n3: [50, 100], op: 'combinado' }
-                    ],
-                    junio: [
-                        { tipo: 'Estadística', ejemplo: 'Las notas de la clase son: {n1}, {n2}, {n3}. ¿Cuál es la media?', n1: [7, 8], n2: [9, 10], n3: [6, 7], op: 'media' }
-                    ]
-                },
-                '5': {
-                    octubre: [
-                        { tipo: 'Operaciones combinadas', ejemplo: 'Calcula: {n1} + {n2} × {n3}', n1: [15, 20, 25], n2: [3, 4, 5], n3: [5, 6, 7], op: 'combinado' }
-                    ],
-                    noviembre: [
-                        { tipo: 'Decimales', ejemplo: 'Multiplica {n1} × {n2}', n1: [3.5, 4.2, 5.1], n2: [2.4, 3.1, 2.5], op: 'multi' }
-                    ],
-                    diciembre: [
-                        { tipo: 'Área triángulo', ejemplo: 'Calcula el área de un triángulo con base {n1} cm y altura {n2} cm', n1: [8, 10, 12], n2: [6, 8, 10], op: 'area' }
-                    ],
-                    enero: [
-                        { tipo: 'Velocidad', ejemplo: 'Un coche viaja a {n1} km/h durante {n2} horas. ¿Qué distancia recorre?', n1: [80, 100, 120], n2: [2.5, 3.5, 4], op: 'velocidad' }
-                    ],
-                    febrero: [
-                        { tipo: 'Fracciones complejas', ejemplo: 'Multiplica {n1}/{n2} × {n3}/{n4}', n1: [2, 3], n2: [3, 4], n3: [4, 5], n4: [5, 6], op: 'fraccion' }
-                    ],
-                    marzo: [
-                        { tipo: 'Círculo', ejemplo: 'Si un círculo tiene radio {n1} cm, ¿cuál es su área? (usa π = 3.14)', n1: [5, 6, 7], op: 'circulo' }
-                    ],
-                    abril: [
-                        { tipo: 'Potencias', ejemplo: 'Calcula {n1}²', n1: [12, 15, 18], op: 'potencia' }
-                    ],
-                    mayo: [
-                        { tipo: 'Ecuaciones simples', ejemplo: 'Resuelve: x + {n1} = {n2}', n1: [15, 20, 25], n2: [35, 45, 50], op: 'ecuacion' }
-                    ],
-                    junio: [
-                        { tipo: 'Probabilidad', ejemplo: 'Si lanzas un dado, ¿qué probabilidad hay de sacar un número par?', op: 'probabilidad' }
-                    ]
-                },
-                '6': {
-                    octubre: [
-                        { tipo: 'Operaciones complejas', ejemplo: 'Calcula: ({n1} + {n2}) × {n3} - {n4}', n1: [25, 30], n2: [15, 20], n3: [3, 4], n4: [20, 30], op: 'combinado' }
-                    ],
-                    noviembre: [
-                        { tipo: 'Porcentajes avanzados', ejemplo: 'Un artículo de {n1} € tiene un descuento del {n2}%. ¿Cuál es el precio final?', n1: [80, 120], n2: [15, 25], op: 'porcentaje' }
-                    ],
-                    diciembre: [
-                        { tipo: 'Volumen cilindro', ejemplo: 'Calcula el volumen de un cilindro con radio {n1} cm y altura {n2} cm (π = 3.14)', n1: [4, 5], n2: [10, 12], op: 'volumen' }
-                    ],
-                    enero: [
-                        { tipo: 'Ecuaciones', ejemplo: 'Resuelve: {n1}x + {n2} = {n3}', n1: [3, 4], n2: [15, 20], n3: [30, 40], op: 'ecuacion' }
-                    ],
-                    febrero: [
-                        { tipo: 'Números enteros', ejemplo: 'Calcula: {n1} - ({n2}) + ({n3})', n1: [15, 20], n2: [-8, -10], n3: [-5, -7], op: 'enteros' }
-                    ],
-                    marzo: [
-                        { tipo: 'Escalas', ejemplo: 'En un mapa a escala 1:{n1}, ¿cuántos km reales son {n2} cm del mapa?', n1: [100000, 200000], n2: [5, 8], op: 'escala' }
-                    ],
-                    abril: [
-                        { tipo: 'Sistema de ecuaciones', ejemplo: 'Resuelve: x + y = {n1} y x - y = {n2}', n1: [20, 30], n2: [4, 6], op: 'sistema' }
-                    ],
-                    mayo: [
-                        { tipo: 'Estadística avanzada', ejemplo: 'Calcula la mediana de: {n1}, {n2}, {n3}, {n4}, {n5}', n1: [12, 15], n2: [18, 20], n3: [14, 16], n4: [10, 12], n5: [22, 25], op: 'estadistica' }
-                    ],
-                    junio: [
-                        { tipo: 'Probabilidad compuesta', ejemplo: 'Al lanzar dos dados, ¿qué probabilidad hay de que sumen {n1}?', n1: [7, 8], op: 'probabilidad' }
-                    ]
-                }
-            };
+        function generarProblemas() {
+            const curso = document.getElementById('curso').value;
+            const mes = document.getElementById('mes').value;
+            const num = parseInt(document.getElementById('numProblemas').value);
+            
+            const plantillas = tiposProblemas[curso]?.[mes] || [];
+            if (plantillas.length === 0) {
+                alert('No hay problemas para esta combinación');
+                return;
+            }
 
-            const generarNumero = (array) => {
-                return array[Math.floor(Math.random() * array.length)];
-            };
-
-            const generarEnunciado = (plantilla) => {
-                let enunciado = plantilla.ejemplo;
-                const numeros = {};
-
-                if (plantilla.n1) {
-                    numeros.n1 = generarNumero(plantilla.n1);
-                    enunciado = enunciado.replace('{n1}', numeros.n1);
-                }
-                if (plantilla.n2) {
-                    numeros.n2 = generarNumero(plantilla.n2);
-                    enunciado = enunciado.replace('{n2}', numeros.n2);
-                }
-                if (plantilla.n3) {
-                    numeros.n3 = generarNumero(plantilla.n3);
-                    enunciado = enunciado.replace('{n3}', numeros.n3);
-                }
-                if (plantilla.n4) {
-                    numeros.n4 = generarNumero(plantilla.n4);
-                    enunciado = enunciado.replace('{n4}', numeros.n4);
-                }
-                if (plantilla.n5) {
-                    numeros.n5 = generarNumero(plantilla.n5);
-                    enunciado = enunciado.replace('{n5}', numeros.n5);
-                }
-
-                return { enunciado, numeros, tipo: plantilla.tipo, op: plantilla.op };
-            };
-
-            const calcularSolucion = (numeros, op) => {
-                const { n1, n2, n3, n4 } = numeros;
-
-                switch (op) {
-                    case 'suma':
-                        return { resultado: n1 + n2, explicacion: `Sumamos ${n1} + ${n2}` };
-                    case 'resta':
-                        return { resultado: n1 - n2, explicacion: `Restamos ${n1} - ${n2}` };
-                    case 'multi':
-                        return { resultado: n1 * (n2 || 1), explicacion: `Multiplicamos ${n1} × ${n2 || 1}` };
-                    case 'div':
-                        return { resultado: Math.floor(n1 / n2), explicacion: `Dividimos ${n1} ÷ ${n2}` };
-                    case 'comparar':
-                        return { resultado: n1 > n2 ? `${n1} es mayor` : `${n2} es mayor`, explicacion: `Comparamos ${n1} y ${n2}` };
-                    case 'patron':
-                        return { resultado: `${n1}, ${n2}`, explicacion: 'Seguimos el patrón de la serie' };
-                    case 'fraccion':
-                        if (n2) {
-                            return { resultado: `${n2 - n1}/${n2}`, explicacion: `De ${n2} partes quedan ${n2 - n1}` };
-                        }
-                        return { resultado: `${n1} partes`, explicacion: `Dividimos en ${n1} partes iguales` };
-                    case 'area':
-                        return { resultado: n1 * n2, explicacion: `Área = base × altura = ${n1} × ${n2}` };
-                    case 'perimetro':
-                        if (n2) {
-                            return { resultado: 2 * (n1 + n2), explicacion: `Perímetro = 2 × (${n1} + ${n2})` };
-                        }
-                        return { resultado: 4 * n1, explicacion: `Perímetro = 4 × ${n1}` };
-                    case 'porcentaje':
-                        return { resultado: (n1 * n2) / 100, explicacion: `${n1}% de ${n2} = (${n1} × ${n2}) ÷ 100` };
-                    case 'combinado':
-                        if (n3 && n4) {
-                            return { resultado: (n1 + n2) * n3 - n4, explicacion: `(${n1} + ${n2}) × ${n3} - ${n4}` };
-                        }
-                        return { resultado: n1 + n2 * n3, explicacion: `${n1} + ${n2} × ${n3}` };
-                    case 'velocidad':
-                        return { resultado: n1 * n2, explicacion: `Distancia = velocidad × tiempo = ${n1} × ${n2}` };
-                    case 'proporcion':
-                        return { resultado: (n2 * n3) / n1, explicacion: `Regla de tres: ${n1}→${n2}, ${n3}→?` };
-                    case 'volumen':
-                        return { resultado: n1 * n1 * n1, explicacion: `Volumen = ${n1}³ = ${n1 * n1 * n1}` };
-                    case 'potencia':
-                        return { resultado: n1 * n1, explicacion: `${n1}² = ${n1 * n1}` };
-                    case 'ecuacion':
-                        return { resultado: n2 - n1, explicacion: `x = ${n2} - ${n1}` };
-                    case 'circulo':
-                        return { resultado: (3.14 * n1 * n1).toFixed(2), explicacion: `Área = π × r² = 3.14 × ${n1}²` };
-                    case 'media':
-                        const suma = n1 + n2 + n3;
-                        return { resultado: (suma / 3).toFixed(2), explicacion: `Media = (${n1} + ${n2} + ${n3}) ÷ 3` };
-                    case 'sistema':
-                        const x = (n1 + n2) / 2;
-                        const y = (n1 - n2) / 2;
-                        return { resultado: `x = ${x}, y = ${y}`, explicacion: `Resolviendo el sistema: x = ${x}, y = ${y}` };
-                    case 'enteros':
-                        return { resultado: n1 - n2 + n3, explicacion: `${n1} - (${n2}) + (${n3})` };
-                    case 'escala':
-                        return { resultado: (n1 * n2) / 100000, explicacion: `${n2} cm × ${n1} = ${(n1 * n2) / 100000} km` };
-                    case 'estadistica':
-                        const valores = [n1, n2, n3, n4, n5 || 0].filter(v => v > 0);
-                        const sumaVal = valores.reduce((a, b) => a + b, 0);
-                        return { resultado: (sumaVal / valores.length).toFixed(2), explicacion: `Media de los valores` };
-                    default:
-                        return { resultado: 'Respuesta abierta', explicacion: 'Resuelve según lo que has aprendido' };
-                }
-            };
-
-            const handleGenerar = () => {
-                const plantillas = tiposProblemas[curso]?.[mes] || [];
-                if (plantillas.length === 0) {
-                    alert('No hay problemas disponibles para esta combinación');
-                    return;
-                }
-
-                const nuevosProblemas = [];
-                for (let i = 0; i < numProblemas; i++) {
-                    const plantilla = plantillas[Math.floor(Math.random() * plantillas.length)];
-                    const { enunciado, numeros, tipo, op } = generarEnunciado(plantilla);
-                    const { resultado, explicacion } = calcularSolucion(numeros, op);
-
-                    nuevosProblemas.push({
-                        enunciado,
-                        tipo,
-                        solucion: resultado.toString(),
-                        explicacion
-                    });
-                }
-
-                setProblemasGenerados(nuevosProblemas);
-                setMostrarSoluciones({});
-                setRespuestasAlumno({});
-            };
-
-            const toggleSolucion = (index) => {
-                setMostrarSoluciones(prev => ({
-                    ...prev,
-                    [index]: !prev[index]
-                }));
-            };
-
-            const handleRespuestaChange = (problemaIndex, fase, valor) => {
-                setRespuestasAlumno(prev => ({
-                    ...prev,
-                    [`${problemaIndex}-${fase}`]: valor
-                }));
-            };
-
-            return (
-                <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 py-8 px-4">
-                    <div className="max-w-7xl mx-auto">
-                        <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl shadow-2xl p-8 mb-8 text-white">
-                            <h1 className="text-4xl font-bold mb-3 text-center">
-                                📚 Generador de Problemas Matemáticos
-                            </h1>
-                            <p className="text-center text-xl opacity-90">
-                                Educación Primaria - Curso 2025/2026
-                            </p>
-                            <p className="text-center text-sm mt-2 opacity-75">
-                                🎯 Con 5 fases de resolución y pizarra digital interactiva
-                            </p>
-                        </div>
-
-                        <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                                <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                                        <BookOpen size={16} className="inline mr-1" />
-                                        Curso
-                                    </label>
-                                    <select
-                                        value={curso}
-                                        onChange={(e) => setCurso(e.target.value)}
-                                        className="w-full p-3 border-2 border-indigo-200 rounded-lg focus:border-indigo-500 focus:outline-none"
-                                    >
-                                        <option value="1">1º Primaria</option>
-                                        <option value="2">2º Primaria</option>
-                                        <option value="3">3º Primaria</option>
-                                        <option value="4">4º Primaria</option>
-                                        <option value="5">5º Primaria</option>
-                                        <option value="6">6º Primaria</option>
-                                    </select>
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                                        <Calendar size={16} className="inline mr-1" />
-                                        Mes
-                                    </label>
-                                    <select
-                                        value={mes}
-                                        onChange={(e) => setMes(e.target.value)}
-                                        className="w-full p-3 border-2 border-indigo-200 rounded-lg focus:border-indigo-500 focus:outline-none"
-                                    >
-                                        {meses.map(m => (
-                                            <option key={m} value={m}>
-                                                {m.charAt(0).toUpperCase() + m.slice(1)}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                                        <Hash size={16} className="inline mr-1" />
-                                        Nº Problemas
-                                    </label>
-                                    <select
-                                        value={numProblemas}
-                                        onChange={(e) => setNumProblemas(parseInt(e.target.value))}
-                                        className="w-full p-3 border-2 border-indigo-200 rounded-lg focus:border-indigo-500 focus:outline-none"
-                                    >
-                                        <option value={1}>1 problema</option>
-                                        <option value={2}>2 problemas</option>
-                                        <option value={3}>3 problemas</option>
-                                    </select>
+            document.getElementById('mensajeInicial').style.display = 'none';
+            
+            let html = '<div class="space-y-8">';
+            for (let i = 0; i < num; i++) {
+                const p = random(plantillas);
+                const n1 = random(p.n1);
+                const n2 = p.n2 ? random(p.n2) : 0;
+                const enunciado = p.plantilla.replace('{n1}', n1).replace('{n2}', n2);
+                const sol = calcular(n1, n2, p.op);
+                
+                html += `
+                    <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                        <div class="bg-gradient-to-r from-indigo-500 to-purple-500 p-6">
+                            <div class="flex items-start gap-3">
+                                <div class="bg-white text-indigo-700 font-bold rounded-full w-10 h-10 flex items-center justify-center text-lg">${i+1}</div>
+                                <div class="flex-1">
+                                    <span class="inline-block bg-white/20 text-white text-xs font-semibold px-3 py-1 rounded-full mb-2">${p.tipo}</span>
+                                    <p class="text-xl text-white leading-relaxed font-medium">${enunciado}</p>
                                 </div>
                             </div>
-
-                            <button
-                                onClick={handleGenerar}
-                                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2"
-                            >
-                                <Lightbulb size={20} />
-                                Generar Problemas
+                        </div>
+                        <div class="p-6 space-y-4">
+                            <div class="border-2 border-blue-300 rounded-lg p-4 bg-blue-50">
+                                <h3 class="text-lg font-bold text-blue-900 mb-2">📖 COMPRENDER</h3>
+                                <textarea class="w-full p-3 border-2 border-blue-300 rounded-lg min-h-[80px]" placeholder="Anota los datos importantes..."></textarea>
+                            </div>
+                            <div class="border-2 border-green-300 rounded-lg p-4 bg-green-50">
+                                <h3 class="text-lg font-bold text-green-900 mb-2">📋 PLANIFICAR</h3>
+                                <textarea class="w-full p-3 border-2 border-green-300 rounded-lg min-h-[80px]" placeholder="¿Cómo lo vas a resolver?"></textarea>
+                            </div>
+                            <div class="border-2 border-orange-300 rounded-lg p-4 bg-orange-50">
+                                <h3 class="text-lg font-bold text-orange-900 mb-2">✏️ EJECUTAR</h3>
+                                <textarea class="w-full p-3 border-2 border-orange-300 rounded-lg min-h-[80px]" placeholder="Haz los cálculos..."></textarea>
+                            </div>
+                            <div class="border-2 border-purple-300 rounded-lg p-4 bg-purple-50">
+                                <h3 class="text-lg font-bold text-purple-900 mb-2">✅ VERIFICAR</h3>
+                                <textarea class="w-full p-3 border-2 border-purple-300 rounded-lg min-h-[80px]" placeholder="Revisa tu respuesta..."></textarea>
+                            </div>
+                            <div class="border-2 border-pink-300 rounded-lg p-4 bg-pink-50">
+                                <h3 class="text-lg font-bold text-pink-900 mb-2">🎯 SOLUCIÓN FINAL</h3>
+                                <textarea class="w-full p-3 border-2 border-pink-300 rounded-lg min-h-[80px]" placeholder="Escribe tu respuesta final..."></textarea>
+                            </div>
+                            <button onclick="toggleSol(${i})" class="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-4 rounded-lg transition-colors">
+                                ✓ Ver Solución del Profesor
                             </button>
+                            <div id="sol-${i}" style="display:none" class="mt-4 p-5 bg-green-50 border-2 border-green-200 rounded-lg">
+                                <h3 class="text-green-900 font-bold mb-2">💡 Explicación:</h3>
+                                <p class="text-green-800 mb-3">${sol.e}</p>
+                                <h3 class="text-green-900 font-bold mb-2">✓ Solución:</h3>
+                                <p class="text-green-800 font-semibold text-xl">${sol.r}</p>
+                            </div>
                         </div>
-
-                        {problemasGenerados.length > 0 && (
-                            <div className="space-y-8">
-                                {problemasGenerados.map((problema, index) => (
-                                    <div key={index} className="bg-white rounded-xl shadow-lg overflow-hidden">
-                                        <div className="bg-gradient-to-r from-indigo-500 to-purple-500 p-6">
-                                            <div className="flex items-start gap-3">
-                                                <div className="bg-white text-indigo-700 font-bold rounded-full w-10 h-10 flex items-center justify-center flex-shrink-0 text-lg">
-                                                    {index + 1}
-                                                </div>
-                                                <div className="flex-1">
-                                                    <span className="inline-block bg-white/20 text-white text-xs font-semibold px-3 py-1 rounded-full mb-2">
-                                                        {problema.tipo}
-                                                    </span>
-                                                    <p className="text-xl text-white leading-relaxed font-medium">
-                                                        {problema.enunciado}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div className="p-6 space-y-6">
-                                            <div className="border-2 border-blue-300 rounded-lg p-5 bg-blue-50">
-                                                <h3 className="text-lg font-bold text-blue-900 mb-3 flex items-center gap-2">
-                                                    <span className="bg-blue-500 text-white rounded-full w-7 h-7 flex items-center justify-center text-sm">1</span>
-                                                    📖 COMPRENDER
-                                                </h3>
-                                                <p className="text-blue-700 text-sm mb-2">Leer el problema, anotar datos y pregunta</p>
-                                                <textarea
-                                                    value={respuestasAlumno[`${index}-comprender`] || ''}
-                                                    onChange={(e) => handleRespuestaChange(index, 'comprender', e.target.value)}
-                                                    placeholder="Escribe aquí los datos importantes y qué te preguntan..."
-                                                    className="w-full p-3 border-2 border-blue-300 rounded-lg focus:border-blue-500 focus:outline-none min-h-[100px] resize-y"
-                                                />
-                                            </div>
-
-                                            <div className="border-2 border-green-300 rounded-lg p-5 bg-green-50">
-                                                <h3 className="text-lg font-bold text-green-900 mb-3 flex items-center gap-2">
-                                                    <span className="bg-green-500 text-white rounded-full w-7 h-7 flex items-center justify-center text-sm">2</span>
-                                                    📋 PLANIFICAR
-                                                </h3>
-                                                <p className="text-green-700 text-sm mb-3">Elegir cómo resolverlo (estrategia)</p>
-                                                <DrawingCanvas faseId="planificar" problemaId={index} />
-                                            </div>
-
-                                            <div className="border-2 border-orange-300 rounded-lg p-5 bg-orange-50">
-                                                <h3 className="text-lg font-bold text-orange-900 mb-3 flex items-center gap-2">
-                                                    <span className="bg-orange-500 text-white rounded-full w-7 h-7 flex items-center justify-center text-sm">3</span>
-                                                    ✏️ EJECUTAR
-                                                </h3>
-                                                <p className="text-orange-700 text-sm mb-3">Hacer los cálculos o pasos</p>
-                                                <DrawingCanvas faseId="ejecutar" problemaId={index} />
-                                            </div>
-
-                                            <div className="border-2 border-purple-300 rounded-lg p-5 bg-purple-50">
-                                                <h3 className="text-lg font-bold text-purple-900 mb-3 flex items-center gap-2">
-                                                    <span className="bg-purple-500 text-white rounded-full w-7 h-7 flex items-center justify-center text-sm">4</span>
-                                                    ✅ VERIFICAR
-                                                </h3>
-                                                <p className="text-purple-700 text-sm mb-3">Revisar si la respuesta tiene sentido</p>
-                                                <DrawingCanvas faseId="verificar" problemaId={index} />
-                                            </div>
-
-                                            <div className="border-2 border-pink-300 rounded-lg p-5 bg-pink-50">
-                                                <h3 className="text-lg font-bold text-pink-900 mb-3 flex items-center gap-2">
-                                                    <span className="bg-pink-500 text-white rounded-full w-7 h-7 flex items-center justify-center text-sm">5</span>
-                                                    🎯 SOLUCIÓN FINAL
-                                                </h3>
-                                                <p className="text-pink-700 text-sm mb-2">Escribir el resultado definitivo</p>
-                                                <textarea
-                                                    value={respuestasAlumno[`${index}-solucion`] || ''}
-                                                    onChange={(e) => handleRespuestaChange(index, 'solucion', e.target.value)}
-                                                    placeholder="Escribe aquí tu respuesta final completa..."
-                                                    className="w-full p-3 border-2 border-pink-300 rounded-lg focus:border-pink-500 focus:outline-none min-h-[80px] resize-y"
-                                                />
-                                            </div>
-                                        </div>
-
-                                        <div className="p-6 pt-0">
-                                            <button
-                                                onClick={() => toggleSolucion(index)}
-                                                className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2"
-                                            >
-                                                <Check size={20} />
-                                                {mostrarSoluciones[index] ? 'Ocultar' : 'Ver'} Solución del Profesor
-                                            </button>
-
-                                            {mostrarSoluciones[index] && (
-                                                <div className="mt-4 p-5 bg-green-50 border-2 border-green-200 rounded-lg">
-                                                    <div className="mb-3">
-                                                        <h3 className="text-green-900 font-bold text-lg mb-2 flex items-center gap-2">
-                                                            <Lightbulb size={20} />
-                                                            Explicación:
-                                                        </h3>
-                                                        <p className="text-green-800 leading-relaxed">
-                                                            {problema.explicacion}
-                                                        </p>
-                                                    </div>
-                                                    <div className="pt-3 border-t-2 border-green-200">
-                                                        <h3 className="text-green-900 font-bold text-lg mb-2 flex items-center gap-2">
-                                                            <Check size={20} />
-                                                            Solución:
-                                                        </h3>
-                                                        <p className="text-green-800 font-semibold text-xl">
-                                                            {problema.solucion}
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                            )}
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-
-                        {problemasGenerados.length === 0 && (
-                            <div className="bg-white rounded-xl shadow-lg p-12 text-center">
-                                <Lightbulb size={64} className="mx-auto text-indigo-300 mb-4" />
-                                <p className="text-gray-600 text-lg mb-2">
-                                    Selecciona el curso, mes y número de problemas
-                                </p>
-                                <p className="text-gray-500">
-                                    Luego haz clic en "Generar Problemas" para comenzar
-                                </p>
-                            </div>
-                        )}
                     </div>
-                </div>
-            );
-        };
+                `;
+            }
+            html += '</div>';
+            document.getElementById('problemas').innerHTML = html;
+        }
 
-        ReactDOM.render(<ProblemasGenerator />, document.getElementById('root'));
+        function toggleSol(i) {
+            const sol = document.getElementById('sol-' + i);
+            sol.style.display = sol.style.display === 'none' ? 'block' : 'none';
+        }
     </script>
 </body>
 </html>
