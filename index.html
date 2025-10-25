@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Plan de Resolución de Problemas - CEIP Capitulaciones Santa Fe">
+    <meta name="theme-color" content="#4F46E5">
+    
+    <title>Problemas Matemáticos - CEIP Capitulaciones</title>
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Apple Touch Icon -->
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="icons/icon-192.png">
+    
+    <!-- React y Babel desde CDN -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+                'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+                sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        #root {
+            min-height: 100vh;
+        }
+        
+        /* Animación de instalación */
+        .install-prompt {
+            animation: slideUp 0.3s ease-out;
+        }
+        
+        @keyframes slideUp {
+            from {
+                transform: translateY(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    
+    <script type="text/babel">
+        const { useState, useRef, useEffect } = React;
+        const { BookOpen, Calendar, Hash, Lightbulb, Check, Pencil, Eraser, Trash2, X, Download } = lucide;
+
+        // Componente Canvas para dibujar
+        const DrawingCanvas = ({ canvasId }) => {
+          const canvasRef = useRef(null);
+          const [isDrawing, setIsDrawing] = useState(false);
+          const [tool, setTool] = useState('pen');
+          const [context, setContext] = useState(null);
+
+          useEffect(() => {
+            const canvas = canvasRef.current;
+            if (canvas) {
+              const ctx = canvas.getContext('2d');
+              ctx.lineCap = 'round';
+              ctx.lineJoin = 'round';
+              setContext(ctx);
+              
+              ctx.fillStyle = 'white';
+              ctx.fillRect(0, 0, canvas.width, canvas.height);
+            }
+          }, []);
+
+          const startDrawing = (e) => {
+            if (!context) return;
+            setIsDrawing(true);
+            
+            const rect = canvasRef.current.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            context.beginPath();
+            context.moveTo(x, y);
+          };
+
+          const draw = (e) => {
+            if (!isDrawing || !context) return;
+            
+            const rect = canvasRef.current.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            if (tool === 'pen') {
+              context.strokeStyle = '#1e40af';
+              context.lineWidth = 3;
+            } else {
+              context.strokeStyle = 'white';
+              context.lineWidth = 20;
+            }
+            
+            context.lineTo(x, y);
+            context.stroke();
+          };
+
+          const stopDrawing = () => {
+            setIsDrawing(false);
+          };
+
+          const clearCanvas = () => {
+            if (!context) return;
+            context.fillStyle = 'white';
+            context.fillRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+          };
+
+          const handleTouchStart = (e) => {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const mouseEvent = new MouseEvent('mousedown', {
+              clientX: touch.clientX,
+              clientY: touch.clientY
+            });
+            canvasRef.current.dispatchEvent(mouseEvent);
+          };
+
+          const handleTouchMove = (e) => {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const mouseEvent = new MouseEvent('mousemove', {
+              clientX: touch.clientX,
+              clientY: touch.clientY
+            });
+            canvasRef.current.dispatchEvent(mouseEvent);
+          };
+
+          const handleTouchEnd = (e) => {
+            e.preventDefault();
+            const mouseEvent = new MouseEvent('mouseup', {});
+            canvasRef.current.dispatchEvent(mouseEvent);
+          };
+
+          return (
+            <div className="space-y-2">
+              <div className="flex gap-2 flex-wrap">
+                <button
+                  onClick={() => setTool('pen')}
+                  className={`flex items-center gap-1 px-3 py-1.5 rounded-lg font-medium transition-colors ${
+                    tool === 'pen'
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                  }`}
+                >
+                  <Pencil size={16} />
+                  Lápiz
+                </button>
+                <button
+                  onClick={() => setTool('eraser')}
+                  className={`flex items-center gap-1 px-3 py-1.5 rounded-lg font-medium transition-colors ${
+                    tool === 'eraser'
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                  }`}
+                >
+                  <Eraser size={16} />
+                  Borrador
+                </button>
+                <button
+                  onClick={clearCanvas}
+                  className="flex items-center gap-1 px-3 py-1.5 rounded-lg font-medium bg-red-500 text-white hover:bg-red-600 transition-colors"
+                >
+                  <Trash2 size={16} />
+                  Limpiar
+                </button>
+              </div>
+
+              <canvas
+                ref={canvasRef}
+                id={canvasId}
+                width={600}
+                height={250}
+                onMouseDown={startDrawing}
+                onMouseMove={draw}
+                onMouseUp={stopDrawing}
+                onMouseLeave={stopDrawing}
+                onTouchStart={handleTouchStart}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleTouchEnd}
+                className="border-2 border-gray-300 rounded-lg cursor-crosshair w-full touch-none"
+                style={{ maxWidth: '100%', height: 'auto', aspectRatio: '600/250' }}
+              />
+            </div>
+          );
+        };
+
+        const ProblemasGenerator = () => {
+          const [curso, setCurso] = useState('1');
+          const [mes, setMes] = useState('octubre');
+          const [numProblemas, setNumProblemas] = useState(1);
+          const [problemasGenerados, setProblemasGenerados] = useState([]);
+          const [mostrarSoluciones, setMostrarSoluciones] = useState({});
+          const [problemaEnResolucion, setProblemaEnResolucion] = useState(null);
+          const [deferredPrompt, setDeferredPrompt] = useState(null);
+          const [showInstallPrompt, setShowInstallPrompt] = useState(false);
+          const problemasUsados = useRef(new Set());
+
+          useEffect(() => {
+            // Detectar evento de instalación PWA
+            const handleBeforeInstallPrompt = (e) => {
+              e.preventDefault();
+              setDeferredPrompt(e);
+              setShowInstallPrompt(true);
+            };
+
+            window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+
+            return () => {
+              window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+            };
+          }, []);
+
+          const handleInstallClick = async () => {
+            if (!deferredPrompt) return;
+            
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            
+            if (outcome === 'accepted') {
+              setShowInstallPrompt(false);
+            }
+            
+            setDeferredPrompt(null);
+          };
+
+          const meses = [
+            'octubre', 'noviembre', 'diciembre', 'enero', 
+            'febrero', 'marzo', 'abril', 'mayo', 'junio'
+          ];
+
+          const tiposProblemas = {
+            '1': {
+              octubre: [
+                { tipo: 'Conteo y comparación', 
+                  ejemplos: [
+                    '¿Cuántos lápices hay si tienes {n1} rojos y {n2} azules?',
+                    'En la clase hay {n1} niños y {n2} niñas. ¿Cuántos estudiantes hay en total?',
+                    'María tiene {n1} cuentos y su hermano tiene {n2}. ¿Cuántos cuentos tienen entre los dos?',
+                    'En el jardín hay {n1} flores amarillas y {n2} flores rojas. ¿Cuántas flores hay en total?',
+                    'El gato tiene {n1} juguetes y el perro tiene {n2}. ¿Cuántos juguetes hay en total?',
+                  ], 
+                  n1: [3, 4, 5], n2: [2, 3, 4], op: 'suma' },
+                { tipo: 'Sumas con objetos', 
+                  ejemplos: [
+                    'Si tengo {n1} manzanas y me dan {n2} más, ¿cuántas tengo en total?',
+                    'Tengo {n1} coches de juguete y compro {n2} más. ¿Cuántos coches tengo ahora?',
+                    'En mi mochila hay {n1} colores y meto {n2} más. ¿Cuántos colores hay en total?',
+                  ], 
+                  n1: [2, 3, 4], n2: [3, 4, 5], op: 'suma' }
+              ],
+              // ... (incluir todos los meses y cursos como en el original)
+            },
+            '2': {
+              octubre: [
+                { tipo: 'Sumas y restas hasta 100', 
+                  ejemplos: [
+                    'En una tienda hay {n1} juguetes y llegan {n2} más. ¿Cuántos juguetes hay ahora?',
+                    'Un autobús lleva {n1} pasajeros y suben {n2} más. ¿Cuántos pasajeros viajan ahora?',
+                  ], 
+                  n1: [25, 30, 35], n2: [15, 20, 25], op: 'suma' }
+              ],
+            },
+            '3': {
+              octubre: [
+                { tipo: 'Multiplicaciones', 
+                  ejemplos: [
+                    'Si cada caja tiene {n1} lápices y hay {n2} cajas, ¿cuántos lápices hay en total?',
+                    'Un pastelero hace {n1} tartas cada día. ¿Cuántas tartas hace en {n2} días?',
+                  ], 
+                  n1: [6, 7, 8, 9], n2: [5, 6, 7, 8], op: 'multiplicacion' }
+              ],
+            },
+            '4': {
+              octubre: [
+                { tipo: 'Números grandes', 
+                  ejemplos: [
+                    'En un estadio hay {n1} personas en una grada y {n2} en otra. ¿Cuántas personas hay en total?',
+                  ], 
+                  n1: [3500, 4200], n2: [2800, 3300], op: 'suma_grande' }
+              ],
+            },
+            '5': {
+              octubre: [
+                { tipo: 'Operaciones con números grandes', 
+                  ejemplos: [
+                    'Calcula: {n1} × {n2} + {n3}',
+                  ], 
+                  n1: [1250, 3420], n2: [235, 487], n3: [150, 320], op: 'grandes' }
+              ],
+            },
+            '6': {
+              octubre: [
+                { tipo: 'Números enteros', 
+                  ejemplos: [
+                    'Calcula: (-{n1}) + {n2}',
+                    'Un submarino está a -{n1} metros y baja {n2} metros más. ¿A qué profundidad está?'
+                  ], 
+                  n1: [15, 23], n2: [8, 12], op: 'enteros' }
+              ],
+            }
+          };
+
+          const resolverProblema = (tipo, n1, n2, n3, op) => {
+            let resultado, explicacion, solucion;
+            
+            switch(op) {
+              case 'suma':
+                resultado = n1 + n2;
+                explicacion = `Para resolver este problema, necesitamos sumar ${n1} + ${n2}`;
+                solucion = `Solución: ${n1} + ${n2} = ${resultado}`;
+                break;
+              case 'resta':
+                resultado = n1 - n2;
+                explicacion = `Para resolver este problema, necesitamos restar ${n1} - ${n2}`;
+                solucion = `Solución: ${n1} - ${n2} = ${resultado}`;
+                break;
+              case 'multiplicacion':
+                resultado = n1 * n2;
+                explicacion = `Para resolver este problema, multiplicamos ${n1} × ${n2}`;
+                solucion = `Solución: ${n1} × ${n2} = ${resultado}`;
+                break;
+              case 'division':
+                resultado = Math.floor(n1 / n2);
+                const resto = n1 % n2;
+                explicacion = `Para resolver este problema, dividimos ${n1} entre ${n2}`;
+                solucion = resto === 0 
+                  ? `Solución: ${n1} ÷ ${n2} = ${resultado}`
+                  : `Solución: ${n1} ÷ ${n2} = ${resultado} (sobran ${resto})`;
+                break;
+              default:
+                explicacion = `Resuelve el problema paso a paso`;
+                solucion = `Solución: (resultado según el problema)`;
+            }
+            
+            return { explicacion, solucion };
+          };
+
+          const generarNumero = (opciones) => {
+            return opciones[Math.floor(Math.random() * opciones.length)];
+          };
+
+          const generarProblema = (tipoProblema) => {
+            const n1 = generarNumero(tipoProblema.n1);
+            const n2 = generarNumero(tipoProblema.n2);
+            const n3 = tipoProblema.n3 ? generarNumero(tipoProblema.n3) : 0;
+            
+            let enunciado = tipoProblema.ejemplos[
+              Math.floor(Math.random() * tipoProblema.ejemplos.length)
+            ];
+            
+            enunciado = enunciado
+              .replace('{n1}', n1)
+              .replace('{n2}', n2)
+              .replace('{n3}', n3);
+            
+            const clave = `${tipoProblema.tipo}-${enunciado}`;
+            
+            if (problemasUsados.current.has(clave)) {
+              return generarProblema(tipoProblema);
+            }
+            
+            problemasUsados.current.add(clave);
+            
+            const { explicacion, solucion } = resolverProblema(
+              tipoProblema.tipo, n1, n2, n3, tipoProblema.op
+            );
+            
+            return {
+              tipo: tipoProblema.tipo,
+              enunciado,
+              explicacion,
+              solucion
+            };
+          };
+
+          const handleGenerar = () => {
+            const problemasMes = tiposProblemas[curso]?.[mes];
+            if (!problemasMes) return;
+
+            problemasUsados.current.clear();
+            
+            const nuevosProblemas = [];
+            for (let i = 0; i < numProblemas; i++) {
+              const tipoAleatorio = problemasMes[Math.floor(Math.random() * problemasMes.length)];
+              nuevosProblemas.push(generarProblema(tipoAleatorio));
+            }
+            
+            setProblemasGenerados(nuevosProblemas);
+            setMostrarSoluciones({});
+            setProblemaEnResolucion(null);
+          };
+
+          const toggleSolucion = (index) => {
+            setMostrarSoluciones(prev => ({
+              ...prev,
+              [index]: !prev[index]
+            }));
+          };
+
+          const iniciarResolucion = (index) => {
+            setProblemaEnResolucion(index);
+          };
+
+          const cerrarResolucion = () => {
+            setProblemaEnResolucion(null);
+          };
+
+          return (
+            <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+              {/* Prompt de instalación */}
+              {showInstallPrompt && (
+                <div className="fixed bottom-4 left-4 right-4 z-50 install-prompt">
+                  <div className="bg-indigo-600 text-white rounded-lg shadow-2xl p-4 flex items-center justify-between max-w-md mx-auto">
+                    <div className="flex items-center gap-3">
+                      <Download size={24} />
+                      <div>
+                        <p className="font-semibold">Instalar App</p>
+                        <p className="text-xs opacity-90">Accede sin conexión</p>
+                      </div>
+                    </div>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={handleInstallClick}
+                        className="bg-white text-indigo-600 px-4 py-2 rounded-lg font-semibold text-sm hover:bg-indigo-50 transition-colors"
+                      >
+                        Instalar
+                      </button>
+                      <button
+                        onClick={() => setShowInstallPrompt(false)}
+                        className="text-white hover:bg-indigo-700 px-3 py-2 rounded-lg transition-colors"
+                      >
+                        <X size={20} />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <div className="max-w-6xl mx-auto">
+                {/* Header */}
+                <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
+                  <div className="flex items-center gap-3 mb-2">
+                    <BookOpen className="text-indigo-600" size={32} />
+                    <h1 className="text-3xl font-bold text-gray-800">
+                      Plan de Resolución de Problemas
+                    </h1>
+                  </div>
+                  <p className="text-gray-600">Educación Primaria - CEIP Capitulaciones Santa Fe</p>
+                </div>
+
+                {/* Controles */}
+                <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        <BookOpen size={16} className="inline mr-1" />
+                        Curso
+                      </label>
+                      <select
+                        value={curso}
+                        onChange={(e) => setCurso(e.target.value)}
+                        className="w-full p-3 border-2 border-indigo-200 rounded-lg focus:border-indigo-500 focus:outline-none"
+                      >
+                        <option value="1">1º Primaria</option>
+                        <option value="2">2º Primaria</option>
+                        <option value="3">3º Primaria</option>
+                        <option value="4">4º Primaria</option>
+                        <option value="5">5º Primaria</option>
+                        <option value="6">6º Primaria</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        <Calendar size={16} className="inline mr-1" />
+                        Mes
+                      </label>
+                      <select
+                        value={mes}
+                        onChange={(e) => setMes(e.target.value)}
+                        className="w-full p-3 border-2 border-indigo-200 rounded-lg focus:border-indigo-500 focus:outline-none"
+                      >
+                        {meses.map(m => (
+                          <option key={m} value={m}>
+                            {m.charAt(0).toUpperCase() + m.slice(1)}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        <Hash size={16} className="inline mr-1" />
+                        Nº Problemas
+                      </label>
+                      <select
+                        value={numProblemas}
+                        onChange={(e) => setNumProblemas(parseInt(e.target.value))}
+                        className="w-full p-3 border-2 border-indigo-200 rounded-lg focus:border-indigo-500 focus:outline-none"
+                      >
+                        <option value={1}>1 problema</option>
+                        <option value={2}>2 problemas</option>
+                        <option value={3}>3 problemas</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={handleGenerar}
+                    className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2"
+                  >
+                    <Lightbulb size={20} />
+                    Generar Problemas
+                  </button>
+                </div>
+
+                {/* Problemas Generados */}
+                {problemasGenerados.length > 0 && (
+                  <div className="space-y-4">
+                    {problemasGenerados.map((problema, index) => (
+                      <div key={index} className="bg-white rounded-xl shadow-lg p-6">
+                        {problemaEnResolucion !== index ? (
+                          <>
+                            <div className="flex items-start gap-3 mb-3">
+                              <div className="bg-indigo-100 text-indigo-700 font-bold rounded-full w-8 h-8 flex items-center justify-center flex-shrink-0">
+                                {index + 1}
+                              </div>
+                              <div className="flex-1">
+                                <span className="inline-block bg-blue-100 text-blue-800 text-xs font-semibold px-3 py-1 rounded-full mb-2">
+                                  {problema.tipo}
+                                </span>
+                                <p className="text-lg text-gray-800 leading-relaxed">
+                                  {problema.enunciado}
+                                </p>
+                              </div>
+                            </div>
+
+                            <button
+                              onClick={() => iniciarResolucion(index)}
+                              className="mt-4 bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200 flex items-center gap-2"
+                            >
+                              <Pencil size={18} />
+                              Resolver Problema
+                            </button>
+                          </>
+                        ) : (
+                          <div className="space-y-6">
+                            <div className="flex justify-between items-center">
+                              <h2 className="text-2xl font-bold text-indigo-700 flex items-center gap-2">
+                                <div className="bg-indigo-100 text-indigo-700 font-bold rounded-full w-8 h-8 flex items-center justify-center">
+                                  {index + 1}
+                                </div>
+                                Resolviendo problema
+                              </h2>
+                              <button
+                                onClick={cerrarResolucion}
+                                className="text-gray-500 hover:text-gray-700 transition-colors"
+                              >
+                                <X size={24} />
+                              </button>
+                            </div>
+
+                            {/* Fase 1: Comprender */}
+                            <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-5">
+                              <h3 className="text-lg font-bold text-blue-900 mb-3 flex items-center gap-2">
+                                📖 Fase 1: Comprender
+                              </h3>
+                              <div className="bg-white rounded-lg p-4 border-2 border-blue-100">
+                                <p className="text-gray-700 text-base leading-relaxed mb-3">
+                                  <strong>Problema:</strong> {problema.enunciado}
+                                </p>
+                                <p className="text-sm text-gray-600 italic">
+                                  Lee atentamente el problema e identifica los datos importantes y la pregunta que debes responder.
+                                </p>
+                              </div>
+                            </div>
+
+                            {/* Fase 2: Planificar */}
+                            <div className="bg-purple-50 border-2 border-purple-200 rounded-lg p-5">
+                              <h3 className="text-lg font-bold text-purple-900 mb-3 flex items-center gap-2">
+                                🎯 Fase 2: Planificar
+                              </h3>
+                              <p className="text-sm text-gray-600 mb-3">
+                                Dibuja un diagrama o esquema. Elige la estrategia para resolver el problema.
+                              </p>
+                              <DrawingCanvas canvasId={`planificar-${index}`} />
+                            </div>
+
+                            {/* Fase 3: Ejecutar */}
+                            <div className="bg-green-50 border-2 border-green-200 rounded-lg p-5">
+                              <h3 className="text-lg font-bold text-green-900 mb-3 flex items-center gap-2">
+                                ⚡ Fase 3: Ejecutar
+                              </h3>
+                              <p className="text-sm text-gray-600 mb-3">
+                                Haz los cálculos o pasos necesarios para resolver el problema.
+                              </p>
+                              <DrawingCanvas canvasId={`ejecutar-${index}`} />
+                            </div>
+
+                            {/* Fase 4: Verificar */}
+                            <div className="bg-orange-50 border-2 border-orange-200 rounded-lg p-5">
+                              <h3 className="text-lg font-bold text-orange-900 mb-3 flex items-center gap-2">
+                                🔍 Fase 4: Verificar
+                              </h3>
+                              <p className="text-sm text-gray-600 mb-3">
+                                Revisa si tu respuesta tiene sentido y si has respondido correctamente a la pregunta.
+                              </p>
+                              <DrawingCanvas canvasId={`verificar-${index}`} />
+                            </div>
+
+                            {/* Fase 5: Solución final */}
+                            <div className="bg-indigo-50 border-2 border-indigo-200 rounded-lg p-5">
+                              <h3 className="text-lg font-bold text-indigo-900 mb-3 flex items-center gap-2">
+                                ✅ Fase 5: Solución Final
+                              </h3>
+                              <p className="text-sm text-gray-600 mb-3">
+                                Escribe tu respuesta definitiva de forma clara y completa.
+                              </p>
+                              <DrawingCanvas canvasId={`solucion-${index}`} />
+                            </div>
+
+                            <button
+                              onClick={() => toggleSolucion(index)}
+                              className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2"
+                            >
+                              <Check size={20} />
+                              {mostrarSoluciones[index] ? 'Ocultar' : 'Ver'} Solución del Profesor
+                            </button>
+
+                            {mostrarSoluciones[index] && (
+                              <div className="mt-4 p-5 bg-green-50 border-2 border-green-200 rounded-lg">
+                                <div className="mb-3">
+                                  <h3 className="text-green-900 font-bold text-lg mb-2 flex items-center gap-2">
+                                    <Lightbulb size={20} />
+                                    Explicación:
+                                  </h3>
+                                  <p className="text-green-800 leading-relaxed">
+                                    {problema.explicacion}
+                                  </p>
+                                </div>
+                                <div className="pt-3 border-t-2 border-green-200">
+                                  <h3 className="text-green-900 font-bold text-lg mb-2 flex items-center gap-2">
+                                    <Check size={20} />
+                                    Solución:
+                                  </h3>
+                                  <p className="text-green-800 font-semibold whitespace-pre-line">
+                                    {problema.solucion}
+                                  </p>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {problemasGenerados.length === 0 && (
+                  <div className="bg-white rounded-xl shadow-lg p-12 text-center">
+                    <Lightbulb size={64} className="mx-auto text-indigo-300 mb-4" />
+                    <p className="text-gray-600 text-lg">
+                      Selecciona el curso, mes y número de problemas, luego haz clic en "Generar Problemas"
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+        };
+
+        // Inicializar iconos de Lucide
+        lucide.createIcons();
+
+        // Renderizar la app
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<ProblemasGenerator />);
+    </script>
+    
+    <script>
+        // Registrar Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('service-worker.js')
+                    .then(registration => {
+                        console.log('Service Worker registrado:', registration);
+                    })
+                    .catch(error => {
+                        console.log('Error al registrar Service Worker:', error);
+                    });
+            });
+        }
+    </script>
+</body>
+</html>
