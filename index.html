@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>📚 Generador de Problemas Matemáticos</title>
+    <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/vunisal706-droid/Resoluciondeproblemas/main/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="https://raw.githubusercontent.com/vunisal706-droid/Resoluciondeproblemas/main/icons/icon-192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="https://raw.githubusercontent.com/vunisal706-droid/Resoluciondeproblemas/main/icons/icon-512.png">
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 min-h-screen">
@@ -68,49 +71,207 @@
     </div>
 
     <script>
-        const tiposProblemas = {
-            '1': {
-                octubre: [
-                    { tipo: 'Conteo', plantilla: '¿Cuántos lápices hay si tienes {n1} rojos y {n2} azules?', n1: [3,4,5,6], n2: [2,3,4,5], op: 'suma' },
-                    { tipo: 'Sumas', plantilla: 'Si tengo {n1} manzanas y me dan {n2} más, ¿cuántas tengo?', n1: [2,3,4,5], n2: [3,4,5,6], op: 'suma' }
-                ],
-                noviembre: [
-                    { tipo: 'Restas', plantilla: 'Tienes {n1} caramelos y te comes {n2}. ¿Cuántos te quedan?', n1: [8,9,10], n2: [2,3,4], op: 'resta' }
-                ],
-                diciembre: [
-                    { tipo: 'Comparación', plantilla: '¿Cuál es mayor, {n1} o {n2}?', n1: [5,7,9], n2: [3,6,8], op: 'comparar' }
-                ]
-            },
-            '2': {
-                octubre: [
-                    { tipo: 'Restas hasta 20', plantilla: 'Si tienes {n1} manzanas y regalas {n2}, ¿cuántas te quedan?', n1: [14,16,18,20], n2: [6,7,8,9], op: 'resta' }
-                ],
-                noviembre: [
-                    { tipo: 'Multiplicación', plantilla: 'Si hay {n1} cajas con {n2} juguetes cada una, ¿cuántos hay?', n1: [3,4,5], n2: [3,4,5], op: 'multi' }
-                ]
-            },
-            '3': {
-                octubre: [
-                    { tipo: 'Restas hasta 100', plantilla: 'Tienes {n1} puntos y pierdes {n2}. ¿Cuántos te quedan?', n1: [75,85,90,95], n2: [35,40,45,50], op: 'resta' }
-                ],
-                noviembre: [
-                    { tipo: 'División', plantilla: 'Reparte {n1} caramelos entre {n2} niños. ¿Cuántos cada uno?', n1: [20,24,30], n2: [4,5,6], op: 'div' }
-                ]
+        let tiposProblemas = {};
+        let problemasLoaded = false;
+
+        // Cargar problemas desde GitHub
+        async function cargarProblemas() {
+            try {
+                const response = await fetch('https://raw.githubusercontent.com/vunisal706-droid/Resoluciondeproblemas/main/LISTA-PROBLEMAS.txt');
+                const texto = await response.text();
+                tiposProblemas = parsearProblemas(texto);
+                problemasLoaded = true;
+                console.log('✅ Problemas cargados correctamente');
+            } catch (error) {
+                console.error('❌ Error al cargar problemas:', error);
+                // Usar problemas de respaldo
+                tiposProblemas = obtenerProblemasRespaldo();
+                problemasLoaded = true;
             }
-        };
+        }
+
+        // Parsear el archivo de texto
+        function parsearProblemas(texto) {
+            const problemas = {};
+            const lineas = texto.split('\n');
+            let cursoActual = null;
+            let mesActual = null;
+            
+            for (let i = 0; i < lineas.length; i++) {
+                let linea = lineas[i].trim();
+                
+                // Ignorar líneas vacías y separadores
+                if (!linea || linea.startsWith('═') || linea.startsWith('─') || 
+                    linea.startsWith('📚') || linea.startsWith('CEIP') || 
+                    linea.startsWith('Curso 2025') || linea.startsWith('Este documento') ||
+                    linea.startsWith('✅') || linea.startsWith('📝') || 
+                    linea.startsWith('TOTAL') || linea.startsWith('📊') ||
+                    linea.startsWith('Documento generado')) continue;
+                
+                // Detectar curso
+                if (linea.match(/🎯\s*(\d+)º\s*DE\s*PRIMARIA/i)) {
+                    cursoActual = linea.match(/(\d+)º/)[1];
+                    problemas[cursoActual] = {};
+                    continue;
+                }
+                
+                // Detectar mes
+                if (linea.match(/📅\s*(\w+)/i)) {
+                    mesActual = linea.match(/📅\s*(\w+)/i)[1].toLowerCase();
+                    if (cursoActual) {
+                        problemas[cursoActual][mesActual] = [];
+                    }
+                    continue;
+                }
+                
+                // Detectar problemas
+                if (cursoActual && mesActual && linea.match(/^[\d\-\.]/)) {
+                    let pregunta = '';
+                    let rango = '';
+                    
+                    // Buscar pregunta en las siguientes líneas
+                    for (let j = i; j < Math.min(i + 3, lineas.length); j++) {
+                        if (lineas[j].includes('?')) {
+                            pregunta = lineas[j].trim();
+                            break;
+                        }
+                    }
+                    
+                    // Buscar rango
+                    for (let j = i; j < Math.min(i + 3, lineas.length); j++) {
+                        if (lineas[j].includes('{')) {
+                            rango = lineas[j].trim();
+                            break;
+                        }
+                    }
+                    
+                    if (pregunta && pregunta.includes('?')) {
+                        const problema = extraerProblema(pregunta, rango);
+                        if (problema) {
+                            problemas[cursoActual][mesActual].push(problema);
+                        }
+                    }
+                }
+            }
+            
+            return problemas;
+        }
+        
+        // Extraer información del problema
+        function extraerProblema(pregunta, rango) {
+            const rangos = [];
+            const matches = rango.match(/\{([\d\.\-]+)\}/g);
+            
+            if (matches) {
+                matches.forEach(match => {
+                    const nums = match.replace(/[{}]/g, '').split('-');
+                    if (nums.length === 2) {
+                        const min = parseFloat(nums[0]);
+                        const max = parseFloat(nums[1]);
+                        const valores = [];
+                        
+                        if (Number.isInteger(min) && Number.isInteger(max)) {
+                            for (let i = min; i <= max; i++) {
+                                valores.push(i);
+                            }
+                        } else {
+                            valores.push(min, (min + max) / 2, max);
+                        }
+                        rangos.push(valores);
+                    }
+                });
+            }
+            
+            if (rangos.length === 0) {
+                rangos.push([2, 3, 4, 5]);
+            }
+            
+            // Determinar operación
+            let op = 'suma';
+            const preguntaLower = pregunta.toLowerCase();
+            if (preguntaLower.includes('resta') || preguntaLower.includes('quit') || 
+                preguntaLower.includes('pierdes') || preguntaLower.includes('comes') ||
+                preguntaLower.includes('regalas')) {
+                op = 'resta';
+            } else if (preguntaLower.includes('multipli') || preguntaLower.includes('cajas') || 
+                       preguntaLower.includes('cada una')) {
+                op = 'multi';
+            } else if (preguntaLower.includes('reparte') || preguntaLower.includes('divid')) {
+                op = 'div';
+            } else if (preguntaLower.includes('mayor') || preguntaLower.includes('menor')) {
+                op = 'comparar';
+            } else if (preguntaLower.includes('ordena')) {
+                op = 'ordenar';
+            } else if (preguntaLower.includes('completa') || preguntaLower.includes('serie')) {
+                op = 'patron';
+            } else if (preguntaLower.includes('partes')) {
+                op = 'fraccion';
+            } else if (preguntaLower.includes('perímetro')) {
+                op = 'perimetro';
+            } else if (preguntaLower.includes('área')) {
+                op = 'area';
+            } else if (preguntaLower.includes('km/h') || preguntaLower.includes('velocidad')) {
+                op = 'velocidad';
+            } else if (preguntaLower.includes('%') || preguntaLower.includes('descuento')) {
+                op = 'porcentaje';
+            }
+            
+            let tipo = 'Problema';
+            if (preguntaLower.includes('suma')) tipo = 'Sumas';
+            else if (preguntaLower.includes('resta')) tipo = 'Restas';
+            else if (preguntaLower.includes('multipli')) tipo = 'Multiplicación';
+            else if (preguntaLower.includes('divid') || preguntaLower.includes('reparte')) tipo = 'División';
+            else if (preguntaLower.includes('€') || preguntaLower.includes('céntimo')) tipo = 'Dinero';
+            else if (preguntaLower.includes('metros') || preguntaLower.includes('mide')) tipo = 'Medidas';
+            
+            return {
+                tipo: tipo,
+                plantilla: pregunta,
+                n1: rangos[0] || [2, 3, 4, 5],
+                n2: rangos[1] || [0],
+                n3: rangos[2] || [0],
+                op: op
+            };
+        }
+
+        // Problemas de respaldo
+        function obtenerProblemasRespaldo() {
+            return {
+                '1': {
+                    octubre: [
+                        { tipo: 'Conteo', plantilla: '¿Cuántos lápices hay si tienes {n1} rojos y {n2} azules?', n1: [3,4,5,6], n2: [2,3,4,5], n3: [0], op: 'suma' },
+                        { tipo: 'Sumas', plantilla: 'Si tengo {n1} manzanas y me dan {n2} más, ¿cuántas tengo?', n1: [2,3,4,5], n2: [3,4,5,6], n3: [0], op: 'suma' }
+                    ]
+                },
+                '2': {
+                    octubre: [
+                        { tipo: 'Restas', plantilla: 'Si tienes {n1} manzanas y regalas {n2}, ¿cuántas quedan?', n1: [14,16,18,20], n2: [6,7,8,9], n3: [0], op: 'resta' }
+                    ]
+                }
+            };
+        }
 
         function random(arr) {
             return arr[Math.floor(Math.random() * arr.length)];
         }
 
-        function calcular(n1, n2, op) {
+        function calcular(n1, n2, n3, op) {
             switch(op) {
                 case 'suma': return { r: n1 + n2, e: `Sumamos ${n1} + ${n2} = ${n1+n2}` };
                 case 'resta': return { r: n1 - n2, e: `Restamos ${n1} - ${n2} = ${n1-n2}` };
                 case 'multi': return { r: n1 * n2, e: `Multiplicamos ${n1} × ${n2} = ${n1*n2}` };
                 case 'div': return { r: Math.floor(n1/n2), e: `Dividimos ${n1} ÷ ${n2} = ${Math.floor(n1/n2)}` };
-                case 'comparar': return { r: n1 > n2 ? `${n1} es mayor` : `${n2} es mayor`, e: `Comparamos ${n1} y ${n2}` };
-                default: return { r: '?', e: 'Resuelve según lo aprendido' };
+                case 'comparar': return { r: n1 > n2 ? `${n1} es mayor` : n2 > n1 ? `${n2} es mayor` : 'Son iguales', e: `Comparamos ${n1} y ${n2}` };
+                case 'ordenar': return { r: 'Ordena de menor a mayor', e: 'Observa cada número' };
+                case 'patron': return { r: 'Completa el patrón', e: 'Busca la regla de la serie' };
+                case 'fraccion': return { r: `División en partes`, e: 'Divide en partes iguales' };
+                case 'perimetro': 
+                    if (n2 > 0) return { r: 2*(n1+n2), e: `Perímetro = 2×(${n1}+${n2}) = ${2*(n1+n2)} cm` };
+                    return { r: 4*n1, e: `Perímetro = 4×${n1} = ${4*n1} cm` };
+                case 'area': return { r: n1 * n2, e: `Área = ${n1} × ${n2} = ${n1*n2} cm²` };
+                case 'porcentaje': return { r: ((100-n2)*n1/100).toFixed(2), e: `${n1}€ - ${n2}% = ${((100-n2)*n1/100).toFixed(2)}€` };
+                case 'velocidad': return { r: n1*n2, e: `Distancia = ${n1} × ${n2} = ${n1*n2} km` };
+                default: return { r: 'Piensa en la solución', e: 'Usa lo aprendido en clase' };
             }
         }
 
@@ -119,9 +280,15 @@
             const mes = document.getElementById('mes').value;
             const num = parseInt(document.getElementById('numProblemas').value);
             
+            if (!problemasLoaded) {
+                alert('⏳ Cargando problemas... Espera un momento');
+                setTimeout(generarProblemas, 1000);
+                return;
+            }
+            
             const plantillas = tiposProblemas[curso]?.[mes] || [];
             if (plantillas.length === 0) {
-                alert('No hay problemas para esta combinación');
+                alert('❌ No hay problemas para esta combinación');
                 return;
             }
 
@@ -131,9 +298,16 @@
             for (let i = 0; i < num; i++) {
                 const p = random(plantillas);
                 const n1 = random(p.n1);
-                const n2 = p.n2 ? random(p.n2) : 0;
-                const enunciado = p.plantilla.replace('{n1}', n1).replace('{n2}', n2);
-                const sol = calcular(n1, n2, p.op);
+                const n2 = p.n2 && p.n2[0] !== 0 ? random(p.n2) : 0;
+                const n3 = p.n3 && p.n3[0] !== 0 ? random(p.n3) : 0;
+                
+                let enunciado = p.plantilla
+                    .replace('{n1}', n1)
+                    .replace('{n2}', n2)
+                    .replace('{n3}', n3)
+                    .replace(/\{[^}]*\}/g, '');
+                
+                const sol = calcular(n1, n2, n3, p.op);
                 
                 html += `
                     <div class="bg-white rounded-xl shadow-lg overflow-hidden">
@@ -149,23 +323,53 @@
                         <div class="p-6 space-y-4">
                             <div class="border-2 border-blue-300 rounded-lg p-4 bg-blue-50">
                                 <h3 class="text-lg font-bold text-blue-900 mb-2">📖 COMPRENDER</h3>
-                                <textarea class="w-full p-3 border-2 border-blue-300 rounded-lg min-h-[80px]" placeholder="Anota los datos importantes..."></textarea>
+                                <canvas id="canvas-comprender-${i}" class="w-full border-2 border-blue-400 rounded-lg bg-white cursor-crosshair" height="200"></canvas>
+                                <div class="mt-2 flex gap-2 flex-wrap">
+                                    <button onclick="cambiarColor('canvas-comprender-${i}', 'black')" class="px-3 py-1 bg-black text-white rounded text-sm">Negro</button>
+                                    <button onclick="cambiarColor('canvas-comprender-${i}', 'blue')" class="px-3 py-1 bg-blue-500 text-white rounded text-sm">Azul</button>
+                                    <button onclick="cambiarColor('canvas-comprender-${i}', 'red')" class="px-3 py-1 bg-red-500 text-white rounded text-sm">Rojo</button>
+                                    <button onclick="limpiarCanvas('canvas-comprender-${i}')" class="px-3 py-1 bg-gray-500 text-white rounded text-sm">🗑️ Borrar</button>
+                                </div>
                             </div>
                             <div class="border-2 border-green-300 rounded-lg p-4 bg-green-50">
                                 <h3 class="text-lg font-bold text-green-900 mb-2">📋 PLANIFICAR</h3>
-                                <textarea class="w-full p-3 border-2 border-green-300 rounded-lg min-h-[80px]" placeholder="¿Cómo lo vas a resolver?"></textarea>
+                                <canvas id="canvas-planificar-${i}" class="w-full border-2 border-green-400 rounded-lg bg-white cursor-crosshair" height="200"></canvas>
+                                <div class="mt-2 flex gap-2 flex-wrap">
+                                    <button onclick="cambiarColor('canvas-planificar-${i}', 'black')" class="px-3 py-1 bg-black text-white rounded text-sm">Negro</button>
+                                    <button onclick="cambiarColor('canvas-planificar-${i}', 'blue')" class="px-3 py-1 bg-blue-500 text-white rounded text-sm">Azul</button>
+                                    <button onclick="cambiarColor('canvas-planificar-${i}', 'red')" class="px-3 py-1 bg-red-500 text-white rounded text-sm">Rojo</button>
+                                    <button onclick="limpiarCanvas('canvas-planificar-${i}')" class="px-3 py-1 bg-gray-500 text-white rounded text-sm">🗑️ Borrar</button>
+                                </div>
                             </div>
                             <div class="border-2 border-orange-300 rounded-lg p-4 bg-orange-50">
                                 <h3 class="text-lg font-bold text-orange-900 mb-2">✏️ EJECUTAR</h3>
-                                <textarea class="w-full p-3 border-2 border-orange-300 rounded-lg min-h-[80px]" placeholder="Haz los cálculos..."></textarea>
+                                <canvas id="canvas-ejecutar-${i}" class="w-full border-2 border-orange-400 rounded-lg bg-white cursor-crosshair" height="200"></canvas>
+                                <div class="mt-2 flex gap-2 flex-wrap">
+                                    <button onclick="cambiarColor('canvas-ejecutar-${i}', 'black')" class="px-3 py-1 bg-black text-white rounded text-sm">Negro</button>
+                                    <button onclick="cambiarColor('canvas-ejecutar-${i}', 'blue')" class="px-3 py-1 bg-blue-500 text-white rounded text-sm">Azul</button>
+                                    <button onclick="cambiarColor('canvas-ejecutar-${i}', 'red')" class="px-3 py-1 bg-red-500 text-white rounded text-sm">Rojo</button>
+                                    <button onclick="limpiarCanvas('canvas-ejecutar-${i}')" class="px-3 py-1 bg-gray-500 text-white rounded text-sm">🗑️ Borrar</button>
+                                </div>
                             </div>
                             <div class="border-2 border-purple-300 rounded-lg p-4 bg-purple-50">
                                 <h3 class="text-lg font-bold text-purple-900 mb-2">✅ VERIFICAR</h3>
-                                <textarea class="w-full p-3 border-2 border-purple-300 rounded-lg min-h-[80px]" placeholder="Revisa tu respuesta..."></textarea>
+                                <canvas id="canvas-verificar-${i}" class="w-full border-2 border-purple-400 rounded-lg bg-white cursor-crosshair" height="200"></canvas>
+                                <div class="mt-2 flex gap-2 flex-wrap">
+                                    <button onclick="cambiarColor('canvas-verificar-${i}', 'black')" class="px-3 py-1 bg-black text-white rounded text-sm">Negro</button>
+                                    <button onclick="cambiarColor('canvas-verificar-${i}', 'blue')" class="px-3 py-1 bg-blue-500 text-white rounded text-sm">Azul</button>
+                                    <button onclick="cambiarColor('canvas-verificar-${i}', 'red')" class="px-3 py-1 bg-red-500 text-white rounded text-sm">Rojo</button>
+                                    <button onclick="limpiarCanvas('canvas-verificar-${i}')" class="px-3 py-1 bg-gray-500 text-white rounded text-sm">🗑️ Borrar</button>
+                                </div>
                             </div>
                             <div class="border-2 border-pink-300 rounded-lg p-4 bg-pink-50">
                                 <h3 class="text-lg font-bold text-pink-900 mb-2">🎯 SOLUCIÓN FINAL</h3>
-                                <textarea class="w-full p-3 border-2 border-pink-300 rounded-lg min-h-[80px]" placeholder="Escribe tu respuesta final..."></textarea>
+                                <canvas id="canvas-solucion-${i}" class="w-full border-2 border-pink-400 rounded-lg bg-white cursor-crosshair" height="200"></canvas>
+                                <div class="mt-2 flex gap-2 flex-wrap">
+                                    <button onclick="cambiarColor('canvas-solucion-${i}', 'black')" class="px-3 py-1 bg-black text-white rounded text-sm">Negro</button>
+                                    <button onclick="cambiarColor('canvas-solucion-${i}', 'blue')" class="px-3 py-1 bg-blue-500 text-white rounded text-sm">Azul</button>
+                                    <button onclick="cambiarColor('canvas-solucion-${i}', 'red')" class="px-3 py-1 bg-red-500 text-white rounded text-sm">Rojo</button>
+                                    <button onclick="limpiarCanvas('canvas-solucion-${i}')" class="px-3 py-1 bg-gray-500 text-white rounded text-sm">🗑️ Borrar</button>
+                                </div>
                             </div>
                             <button onclick="toggleSol(${i})" class="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-4 rounded-lg transition-colors">
                                 ✓ Ver Solución del Profesor
@@ -182,12 +386,117 @@
             }
             html += '</div>';
             document.getElementById('problemas').innerHTML = html;
+            
+            // Inicializar canvas
+            setTimeout(() => {
+                for (let i = 0; i < num; i++) {
+                    inicializarCanvas(`canvas-comprender-${i}`);
+                    inicializarCanvas(`canvas-planificar-${i}`);
+                    inicializarCanvas(`canvas-ejecutar-${i}`);
+                    inicializarCanvas(`canvas-verificar-${i}`);
+                    inicializarCanvas(`canvas-solucion-${i}`);
+                }
+            }, 100);
+        }
+
+        // Sistema de dibujo
+        const canvasData = {};
+
+        function inicializarCanvas(canvasId) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            canvas.width = canvas.offsetWidth;
+            
+            canvasData[canvasId] = {
+                ctx: ctx,
+                dibujando: false,
+                color: 'black',
+                grosor: 3
+            };
+            
+            canvas.addEventListener('mousedown', (e) => iniciarDibujo(e, canvasId));
+            canvas.addEventListener('mousemove', (e) => dibujar(e, canvasId));
+            canvas.addEventListener('mouseup', () => detenerDibujo(canvasId));
+            canvas.addEventListener('mouseout', () => detenerDibujo(canvasId));
+            
+            canvas.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                const touch = e.touches[0];
+                const rect = canvas.getBoundingClientRect();
+                const mouseEvent = { clientX: touch.clientX, clientY: touch.clientY, target: canvas };
+                iniciarDibujo(mouseEvent, canvasId);
+            });
+            
+            canvas.addEventListener('touchmove', (e) => {
+                e.preventDefault();
+                const touch = e.touches[0];
+                const mouseEvent = { clientX: touch.clientX, clientY: touch.clientY, target: canvas };
+                dibujar(mouseEvent, canvasId);
+            });
+            
+            canvas.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                detenerDibujo(canvasId);
+            });
+        }
+
+        function iniciarDibujo(e, canvasId) {
+            const data = canvasData[canvasId];
+            if (!data) return;
+            
+            data.dibujando = true;
+            const rect = e.target.getBoundingClientRect();
+            data.ultimoX = e.clientX - rect.left;
+            data.ultimoY = e.clientY - rect.top;
+        }
+
+        function dibujar(e, canvasId) {
+            const data = canvasData[canvasId];
+            if (!data || !data.dibujando) return;
+            
+            const rect = e.target.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            data.ctx.beginPath();
+            data.ctx.strokeStyle = data.color;
+            data.ctx.lineWidth = data.grosor;
+            data.ctx.lineCap = 'round';
+            data.ctx.moveTo(data.ultimoX, data.ultimoY);
+            data.ctx.lineTo(x, y);
+            data.ctx.stroke();
+            
+            data.ultimoX = x;
+            data.ultimoY = y;
+        }
+
+        function detenerDibujo(canvasId) {
+            const data = canvasData[canvasId];
+            if (data) data.dibujando = false;
+        }
+
+        function cambiarColor(canvasId, color) {
+            if (canvasData[canvasId]) {
+                canvasData[canvasId].color = color;
+            }
+        }
+
+        function limpiarCanvas(canvasId) {
+            const canvas = document.getElementById(canvasId);
+            if (canvas && canvasData[canvasId]) {
+                canvasData[canvasId].ctx.clearRect(0, 0, canvas.width, canvas.height);
+            }
         }
 
         function toggleSol(i) {
             const sol = document.getElementById('sol-' + i);
             sol.style.display = sol.style.display === 'none' ? 'block' : 'none';
         }
+
+        // Cargar problemas al iniciar
+        cargarProblemas();
     </script>
 </body>
 </html>
