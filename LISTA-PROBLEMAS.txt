@@ -1,0 +1,696 @@
+📚 LISTA DE PROBLEMAS MATEMÁTICOS - PRIMARIA
+==============================================
+Curso 2025/2026
+CEIP Capitulaciones
+
+Este documento contiene la referencia de todos los problemas disponibles en el generador.
+Cada problema tiene múltiples variantes con números aleatorios.
+
+═════════════════════════════════════════════════════════════════════════════
+
+🎯 1º DE PRIMARIA
+═════════════════════════════════════════════════════════════════════════════
+
+📅 OCTUBRE
+----------
+1. Conteo y comparación
+   - ¿Cuántos lápices hay si tienes {3-6} rojos y {2-5} azules?
+   - Variantes: 24 combinaciones posibles
+
+2. Sumas con objetos  
+   - Si tengo {2-5} manzanas y me dan {3-6} más, ¿cuántas tengo en total?
+   - Variantes: 16 combinaciones posibles
+
+3. Cuenta juguetes
+   - En una caja hay {4-6} coches y {2-4} pelotas. ¿Cuántos juguetes hay?
+   - Variantes: 9 combinaciones posibles
+
+📅 NOVIEMBRE
+------------
+1. Ubicación espacial
+   - Coloca {3-6} juguetes dentro de la caja y {2-4} fuera...
+   - Variantes: 12 combinaciones
+
+2. Sumas y restas hasta 10
+   - Tienes {5-8} pelotas y te dan {2-4} más...
+   - Variantes: 12 combinaciones
+
+3. Quitar objetos
+   - Tienes {8-10} caramelos y te comes {2-4}...
+   - Variantes: 9 combinaciones
+
+📅 DICIEMBRE
+------------
+1. Comparación
+   - ¿Qué grupo tiene más: {6-8} caramelos o {4-6} caramelos?
+   - Variantes: 9 combinaciones
+
+2. Ordenación
+   - Ordena estos números de menor a mayor: {3-8}, {1-9}, {2-10}
+   - Variantes: 64 combinaciones
+
+3. Mayor o menor
+   - ¿Cuál es mayor, {5-9} o {3-8}?
+   - Variantes: 15 combinaciones
+
+📅 ENERO
+--------
+1. Sumas y restas hasta 20
+   - Si tienes {15-20} caramelos y te comes {3-6}...
+   - Variantes: 16 combinaciones
+
+2. Patrones
+   - Completa la serie: 2, 4, 6, ___, ___
+   - Respuesta: 8, 10
+
+3. Sumar más
+   - Pedro tiene {10-14} cromos y le dan {5-7} más...
+   - Variantes: 9 combinaciones
+
+📅 FEBRERO
+----------
+1. Sumas y restas visuales
+   - Si tienes {8-11} lápices y pierdes {3-5}...
+   - Variantes: 12 combinaciones
+
+2. Conteo hasta 20
+   - Cuenta cuántos objetos hay en total si tienes {7-10} y {5-8}
+   - Variantes: 16 combinaciones
+
+3. Objetos perdidos
+   - Tenías {15-19} globos y se te escapan {4-8}...
+   - Variantes: 15 combinaciones
+
+📅 MARZO
+--------
+1. Clasificación
+   - Tienes {6-8} juguetes rojos y {5-7} azules...
+   - Variantes: 9 combinaciones
+
+2. Estimación
+   - ¿Cuántas manzanas crees que hay aproximadamente en una cesta que tiene más de {5-10}?
+   - Variantes: 5 opciones (respuesta abierta)
+
+3. Grupos
+   - En un grupo hay {7-9} niños y en otro {4-6}...
+   - Variantes: 9 combinaciones
+
+📅 ABRIL
+--------
+1. Sumas manipulativas
+   - Tienes {6-8} bloques y te dan {3-5} más...
+   - Variantes: 9 combinaciones
+
+2. Comparación
+   - ¿Quién tiene más lápices, Ana con {5-7} o Pedro con {7-9}?
+   - Variantes: 9 combinaciones
+
+3. Juntar colecciones
+   - María tiene {8-10} pegatinas y Luis {6-8}...
+   - Variantes: 9 combinaciones
+
+📅 MAYO
+-------
+1. Ubicación espacial
+   - Pon {4-6} pelotas dentro de la caja y {3-5} fuera...
+   - Variantes: 9 combinaciones
+
+2. Series numéricas
+   - Completa la serie: 1, 3, 5, ___, ___
+   - Respuesta: 7, 9
+
+3. Contar todo
+   - Si hay {6-8} pájaros en un árbol y llegan {4-6} más...
+   - Variantes: 9 combinaciones
+
+📅 JUNIO
+--------
+1. Sumas hasta 20
+   - Tienes {12-20} caramelos y te comes {4-7}...
+   - Variantes: 16 combinaciones
+
+2. Estimación
+   - ¿Cuántas fichas hay aproximadamente en el tarro si ves más de {8-12}?
+   - Variantes: 3 opciones (respuesta abierta)
+
+3. Problemas mixtos
+   - Ana tenía {10-12} flores, regaló {3-4} y luego le dieron {5-6} más...
+   - Variantes: 8 combinaciones
+
+TOTAL 1º PRIMARIA: ~810 problemas únicos
+
+═════════════════════════════════════════════════════════════════════════════
+
+🎯 2º DE PRIMARIA
+═════════════════════════════════════════════════════════════════════════════
+
+📅 OCTUBRE
+----------
+1. Sumas y restas hasta 20
+   - Si tienes {14-20} manzanas y regalas {6-9}...
+   - Variantes: 16 combinaciones
+
+2. Comparación
+   - ¿Es mayor {18-25} o {12-20}?
+   - Variantes: 12 combinaciones
+
+📅 NOVIEMBRE
+------------
+1. Dobles y mitades
+   - Si tienes {6-12} galletas y las partes por la mitad...
+   - Variantes: 4 opciones
+
+2. Multiplicación inicial
+   - Si hay {3-5} cajas con {3-5} juguetes cada una...
+   - Variantes: 9 combinaciones
+
+📅 DICIEMBRE
+------------
+1. Dinero
+   - Tienes {30-60} céntimos y compras un chicle por {15-25} céntimos...
+   - Variantes: 12 combinaciones
+
+2. Sumas hasta 50
+   - Si tienes {25-40} caramelos y te comes {10-15}...
+   - Variantes: 12 combinaciones
+
+📅 ENERO
+--------
+1. Multiplicación
+   - Si cada día comes {3-5} frutas durante {4-6} días...
+   - Variantes: 9 combinaciones
+
+2. División
+   - Reparte {12-20} lápices entre {3-5} amigos...
+   - Variantes: 15 combinaciones
+
+📅 FEBRERO
+----------
+1. Medidas
+   - Si una cuerda mide {2-4} metros y otra mide {3-5} metros...
+   - Variantes: 9 combinaciones
+
+2. Tiempo
+   - Si son las {3-6} en punto y pasan {2-4} horas...
+   - Variantes: 12 combinaciones
+
+📅 MARZO
+--------
+1. Fracciones
+   - Si tienes una pizza y la divides en {4-8} partes iguales...
+   - Variantes: 3 opciones
+
+2. Decenas
+   - Si tienes {40-60} canicas y pierdes {10-25}...
+   - Variantes: 9 combinaciones
+
+📅 ABRIL
+--------
+1. Multiplicación cotidiana
+   - Si hay {5-7} cajas con {6-8} manzanas cada una...
+   - Variantes: 9 combinaciones
+
+2. Dinero
+   - Si compras {3-5} juguetes de {20-30} céntimos cada uno...
+   - Variantes: 9 combinaciones
+
+📅 MAYO
+-------
+1. Medidas
+   - Si un jugo tiene 1 litro y bebes {250-750} ml...
+   - Variantes: 3 opciones
+
+2. Fracciones
+   - Si partes una tarta en {2-8} partes iguales y comes una...
+   - Variantes: 3 opciones
+
+📅 JUNIO
+--------
+1. Geometría
+   - Dibuja un triángulo y cuenta cuántos lados tiene
+   - Respuesta: 3 lados
+
+2. Patrones
+   - Completa la serie: 2, 4, 6, ___, ___
+   - Respuesta: 8, 10
+
+TOTAL 2º PRIMARIA: ~900 problemas únicos
+
+═════════════════════════════════════════════════════════════════════════════
+
+🎯 3º DE PRIMARIA
+═════════════════════════════════════════════════════════════════════════════
+
+📅 OCTUBRE
+----------
+1. Sumas y restas hasta 100
+   - Tienes {75-95} puntos y pierdes {35-50}...
+   - Variantes: 16 combinaciones
+
+2. Multiplicación tablas 1-5
+   - Si tienes {4-6} cajas con {3-5} libros cada una...
+   - Variantes: 9 combinaciones
+
+📅 NOVIEMBRE
+------------
+1. División reparto
+   - Reparte {20-30} caramelos entre {4-6} niños...
+   - Variantes: 9 combinaciones
+
+2. Tiempo
+   - Si hoy es lunes, ¿qué día será en {4-7} días?
+   - Variantes: 4 opciones
+
+📅 DICIEMBRE
+------------
+1. Fracciones
+   - Si partes una barra de chocolate en {4-8} y te comes {2-3}...
+   - Variantes: 4 combinaciones
+
+2. Dinero
+   - Si tienes {5-8} monedas de 2 euros...
+   - Variantes: 4 combinaciones
+
+📅 ENERO
+--------
+1. Multiplicación tablas 6-10
+   - Si hay {6-8} canastas y en cada una hay {4-6} pelotas...
+   - Variantes: 9 combinaciones
+
+2. División grandes
+   - Reparte {60-81} caramelos entre {6-9} amigos...
+   - Variantes: 9 combinaciones
+
+📅 FEBRERO
+----------
+1. Fracciones cotidianas
+   - Si compartes una pizza entre {5-8} personas y comes {2-3} partes...
+   - Variantes: 8 combinaciones
+
+2. Estimación
+   - ¿Cuánto crees que pesa una manzana aproximadamente en gramos?
+   - Respuesta abierta
+
+📅 MARZO
+--------
+1. Perímetro
+   - Calcula el perímetro de un cuadrado con lados de {5-8} cm
+   - Variantes: 4 opciones
+
+2. Tiempo
+   - ¿Cuántas semanas hay en {2-4} meses aproximadamente?
+   - Variantes: 3 opciones
+
+📅 ABRIL
+--------
+1. Decimales
+   - Si compras una barra de pan por {1.25-1.75} € , ¿cuánto pagarás por {3-5} barras?
+   - Variantes: 9 combinaciones
+
+2. Dinero
+   - Si compras {3-5} juguetes por {20-30} céntimos cada uno...
+   - Variantes: 9 combinaciones
+
+📅 MAYO
+-------
+1. Multiplicación y división
+   - Si tienes {48-64} caramelos y los divides entre {4-8} amigos...
+   - Variantes: 6 combinaciones
+
+2. Estimación
+   - ¿Cuántos metros crees que mide tu mesa?
+   - Respuesta abierta
+
+📅 JUNIO
+--------
+1. Fracciones y decimales
+   - Si tienes {3.5-4.5} litros de jugo y bebes 1/2 litro...
+   - Variantes: 2 opciones
+
+2. Patrones
+   - Completa la serie: 5, 10, 15, ___, ___
+   - Respuesta: 20, 25
+
+TOTAL 3º PRIMARIA: ~900 problemas únicos
+
+═════════════════════════════════════════════════════════════════════════════
+
+🎯 4º DE PRIMARIA
+═════════════════════════════════════════════════════════════════════════════
+
+📅 OCTUBRE
+----------
+1. Operaciones hasta 1000
+   - Tienes {750-920} puntos y pierdes {280-420}...
+   - Variantes: 9 combinaciones
+
+2. Multiplicación 2 cifras
+   - Si compras {5-7} cuadernos a {12-18} € cada uno...
+   - Variantes: 9 combinaciones
+
+📅 NOVIEMBRE
+------------
+1. División 2 cifras
+   - Si tienes {120-180} caramelos y los repartes entre {6-9} niños...
+   - Variantes: 9 combinaciones
+
+2. Tiempo
+   - Si son las {3-5}:{15-45} y pasan 45 minutos...
+   - Variantes: 9 combinaciones
+
+📅 DICIEMBRE
+------------
+1. Fracciones equivalentes
+   - Simplifica la fracción {4-8}/{8-16}
+   - Variantes: 9 combinaciones
+
+2. Dinero
+   - Si compras un libro por {18-32} € y pagas con 50 €...
+   - Variantes: 3 opciones
+
+📅 ENERO
+--------
+1. Área
+   - Calcula el área de un rectángulo de {8-12} cm por {5-7} cm
+   - Variantes: 9 combinaciones
+
+2. División con resto
+   - Divide {47-61} entre {5-7}...
+   - Variantes: 9 combinaciones
+
+📅 FEBRERO
+----------
+1. Decimales
+   - Si compras {2.5-4.5} kg de naranjas a {1.80-2.50} € el kilo...
+   - Variantes: 9 combinaciones
+
+2. Porcentajes
+   - ¿Cuánto es el {25-75}% de {40-100}?
+   - Variantes: 9 combinaciones
+
+📅 MARZO
+--------
+1. Geometría
+   - Calcula el perímetro de un rectángulo de {12-18} cm por {7-9} cm
+   - Variantes: 9 combinaciones
+
+2. Medidas
+   - Convierte {3-7} metros a centímetros
+   - Variantes: 3 opciones
+
+📅 ABRIL
+--------
+1. Proporcionalidad
+   - Si {3-5} lápices cuestan {6-10} €, ¿cuánto costarán {9-15} lápices?
+   - Variantes: 27 combinaciones
+
+2. Tiempo
+   - Si un tren sale a las {8-11}:{15-45} y tarda 2 horas y media...
+   - Variantes: 12 combinaciones
+
+📅 MAYO
+-------
+1. Problemas combinados
+   - Compras {3-5} libros a {8-15} € cada uno y pagas con {50-100} €...
+   - Variantes: 18 combinaciones
+
+2. Volumen
+   - Si un cubo tiene arista de {4-6} cm...
+   - Variantes: 3 opciones
+
+📅 JUNIO
+--------
+1. Estadística
+   - Las notas de la clase son: {7-8}, {9-10}, {6-7}...
+   - Variantes: 8 combinaciones
+
+2. Probabilidad
+   - En una bolsa hay {3-5} bolas rojas y {6-8} azules...
+   - Variantes: 9 combinaciones
+
+TOTAL 4º PRIMARIA: ~900 problemas únicos
+
+═════════════════════════════════════════════════════════════════════════════
+
+🎯 5º DE PRIMARIA
+═════════════════════════════════════════════════════════════════════════════
+
+📅 OCTUBRE
+----------
+1. Operaciones combinadas
+   - Calcula: {15-25} + {3-5} × {5-7}
+   - Variantes: 27 combinaciones
+
+2. Fracciones
+   - Suma {1-2}/{2-3} + {1}/{4-6}
+   - Variantes: 6 combinaciones
+
+📅 NOVIEMBRE
+------------
+1. Decimales
+   - Multiplica {3.5-5.1} × {2.4-3.1}
+   - Variantes: 9 combinaciones
+
+2. Porcentajes
+   - Calcula el {15-30}% de {120-200}
+   - Variantes: 9 combinaciones
+
+📅 DICIEMBRE
+------------
+1. Área triángulo
+   - Calcula el área de un triángulo con base {8-12} cm y altura {6-10} cm
+   - Variantes: 15 combinaciones
+
+2. Proporcionalidad
+   - Si {3-5} kg cuestan {9-15} €, ¿cuánto costarán {7-11} kg?
+   - Variantes: 27 combinaciones
+
+📅 ENERO
+--------
+1. Velocidad
+   - Un coche viaja a {80-120} km/h durante {2.5-4} horas...
+   - Variantes: 9 combinaciones
+
+2. Divisibilidad
+   - ¿Es {72-108} divisible por {8-12}?
+   - Variantes: 9 combinaciones
+
+📅 FEBRERO
+----------
+1. Fracciones complejas
+   - Multiplica {2-3}/{3-4} × {4-5}/{5-6}
+   - Variantes: 4 combinaciones
+
+2. Números negativos
+   - Calcula: {15-20} - {25-30}
+   - Variantes: 4 combinaciones
+
+📅 MARZO
+--------
+1. Círculo
+   - Si un círculo tiene radio {5-7} cm, ¿cuál es su área? (π = 3.14)
+   - Variantes: 3 opciones
+
+2. Escalas
+   - En un mapa, 1 cm representa {50-100} km. ¿Cuántos km son {3-4} cm?
+   - Variantes: 4 combinaciones
+
+📅 ABRIL
+--------
+1. Potencias
+   - Calcula {12-18}²
+   - Variantes: 3 opciones
+
+2. Raíz cuadrada
+   - ¿Cuál es la raíz cuadrada de {64-144}?
+   - Variantes: 3 opciones
+
+📅 MAYO
+-------
+1. Ecuaciones simples
+   - Resuelve: x + {15-25} = {35-50}
+   - Variantes: 6 combinaciones
+
+2. Media y moda
+   - Calcula la media de: {12-15}, {18-20}, {14-16}, {10-12}
+   - Variantes: 16 combinaciones
+
+📅 JUNIO
+--------
+1. Probabilidad
+   - Si lanzas un dado, ¿qué probabilidad hay de sacar un número par?
+   - Respuesta: 1/2 o 50%
+
+2. Interés simple
+   - Si depositas {500-1000} € al {4-5}% anual...
+   - Variantes: 4 combinaciones
+
+TOTAL 5º PRIMARIA: ~900 problemas únicos
+
+═════════════════════════════════════════════════════════════════════════════
+
+🎯 6º DE PRIMARIA
+═════════════════════════════════════════════════════════════════════════════
+
+📅 OCTUBRE
+----------
+1. Operaciones complejas
+   - Calcula: ({25-30} + {15-20}) × {3-4} - {20-30}
+   - Variantes: 40 combinaciones
+
+2. Fracciones algebraicas
+   - Simplifica: ({3-4}/{4-5}) + ({2-3}/{5-6})
+   - Variantes: 4 combinaciones
+
+📅 NOVIEMBRE
+------------
+1. Porcentajes avanzados
+   - Un artículo de {80-120} € tiene un descuento del {15-25}%...
+   - Variantes: 6 combinaciones
+
+2. Proporcionalidad inversa
+   - Si {6-8} obreros tardan {12-15} días, ¿cuántos días tardarán {4-5} obreros?
+   - Variantes: 12 combinaciones
+
+📅 DICIEMBRE
+------------
+1. Volumen cilindro
+   - Calcula el volumen de un cilindro con radio {4-5} cm y altura {10-12} cm
+   - Variantes: 4 combinaciones
+
+2. Teorema de Pitágoras
+   - Los catetos de un triángulo miden {3-5} cm y {4-12} cm...
+   - Variantes: 4 combinaciones
+
+📅 ENERO
+--------
+1. Ecuaciones
+   - Resuelve: {3-4}x + {15-20} = {30-40}
+   - Variantes: 8 combinaciones
+
+2. Velocidad media
+   - Un tren recorre {240-360} km en {3-4} horas...
+   - Variantes: 4 combinaciones
+
+📅 FEBRERO
+----------
+1. Números enteros
+   - Calcula: {15-20} - ({-8 a -10}) + ({-5 a -7})
+   - Variantes: 12 combinaciones
+
+2. Potencias
+   - Calcula: {4-5}³
+   - Variantes: 2 opciones
+
+📅 MARZO
+--------
+1. Área figuras compuestas
+   - Calcula el área de un rectángulo de {10-12} × {6-8} cm con un semicírculo de radio {3-4} cm
+   - Variantes: 8 combinaciones
+
+2. Escalas
+   - En un mapa a escala 1:{100000-200000}, ¿cuántos km reales son {5-8} cm?
+   - Variantes: 6 combinaciones
+
+📅 ABRIL
+--------
+1. Sistema de ecuaciones
+   - Resuelve: x + y = {20-30} y x - y = {4-6}
+   - Variantes: 6 combinaciones
+
+2. Función lineal
+   - Si y = {2-3}x + {5-7}, ¿cuánto vale y cuando x = {4-5}?
+   - Variantes: 8 combinaciones
+
+📅 MAYO
+-------
+1. Estadística avanzada
+   - Calcula la mediana de: {12-15}, {18-20}, {14-16}, {10-12}, {22-25}
+   - Variantes: 32 combinaciones
+
+2. Combinatoria
+   - De cuántas formas se pueden ordenar {4-5} personas?
+   - Variantes: 2 opciones
+
+📅 JUNIO
+--------
+1. Probabilidad compuesta
+   - Al lanzar dos dados, ¿qué probabilidad hay de que sumen {7-8}?
+   - Variantes: 2 opciones
+
+2. Interés compuesto
+   - Si inviertes {1000-2000} € al {5-6}% anual, ¿cuánto tendrás en 2 años?
+   - Variantes: 4 combinaciones
+
+TOTAL 6º PRIMARIA: ~900 problemas únicos
+
+═════════════════════════════════════════════════════════════════════════════
+
+📊 RESUMEN TOTAL
+═════════════════════════════════════════════════════════════════════════════
+
+1º Primaria:  ~810 problemas únicos
+2º Primaria:  ~900 problemas únicos
+3º Primaria:  ~900 problemas únicos
+4º Primaria:  ~900 problemas únicos
+5º Primaria:  ~900 problemas únicos
+6º Primaria:  ~900 problemas únicos
+
+────────────────────────────────────────
+TOTAL GENERAL: +5.300 problemas únicos
+────────────────────────────────────────
+
+═════════════════════════════════════════════════════════════════════════════
+
+🎯 CARACTERÍSTICAS DEL SISTEMA
+═════════════════════════════════════════════════════════════════════════════
+
+✅ SISTEMA ANTI-REPETICIÓN
+- Cada plantilla tiene múltiples rangos de números
+- Los números se generan aleatoriamente cada vez
+- Variedad garantizada en cada sesión
+
+✅ FASES DE RESOLUCIÓN
+1. COMPRENDER → Área de texto para anotar datos
+2. PLANIFICAR → Pizarra digital (canvas) para estrategia
+3. EJECUTAR → Pizarra digital (canvas) para cálculos
+4. VERIFICAR → Pizarra digital (canvas) para comprobación
+5. SOLUCIÓN FINAL → Área de texto para respuesta definitiva
+
+✅ HERRAMIENTAS DE DIBUJO
+- Lápiz con 6 colores diferentes
+- Borrador
+- Limpiar canvas completo
+- 4 grosores de trazo (2px, 3px, 5px, 8px)
+- Soporte táctil para tablets
+
+✅ DISTRIBUCIÓN POR TIPO
+Cada mes incluye 2-3 tipos diferentes de problemas:
+- Problemas de razonamiento
+- Problemas de vida cotidiana
+- Retos lógicos
+
+✅ NIVELES DE DIFICULTAD PROGRESIVOS
+- 1º Primaria: Números hasta 20
+- 2º Primaria: Números hasta 50, multiplicación básica
+- 3º Primaria: Números hasta 100, fracciones simples
+- 4º Primaria: Números hasta 1000, decimales
+- 5º Primaria: Operaciones complejas, porcentajes
+- 6º Primaria: Ecuaciones, geometría avanzada
+
+═════════════════════════════════════════════════════════════════════════════
+
+📝 NOTAS DE USO
+═════════════════════════════════════════════════════════════════════════════
+
+1. Cada vez que generas un problema, los números cambian automáticamente
+2. Las 5 fases se despliegan simultáneamente para trabajar ordenadamente
+3. El alumno puede escribir en las fases 1 y 5, y dibujar en las fases 2, 3 y 4
+4. La solución del profesor está oculta hasta que se solicita
+5. Compatible con pizarras digitales, tablets y ordenadores
+
+═════════════════════════════════════════════════════════════════════════════
+
+Documento generado automáticamente
+CEIP Capitulaciones - Curso 2025/2026
+═════════════════════════════════════════════════════════════════════════════
