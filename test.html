@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test - Diagnóstico</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f0f0f0;
+        }
+        .test {
+            background: white;
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border-left: 4px solid #4CAF50;
+        }
+        .error {
+            border-left-color: #f44336;
+            background: #ffebee;
+        }
+        h1 {
+            color: #333;
+        }
+        code {
+            background: #263238;
+            color: #aed581;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 Diagnóstico de la App</h1>
+    
+    <div class="test" id="test1">
+        ✅ Este archivo carga correctamente
+    </div>
+    
+    <div class="test" id="test2">
+        ⏳ Comprobando React...
+    </div>
+    
+    <div class="test" id="test3">
+        ⏳ Comprobando manifest.json...
+    </div>
+    
+    <div class="test" id="test4">
+        ⏳ Comprobando iconos...
+    </div>
+    
+    <div class="test">
+        <h3>Información de la URL:</h3>
+        <p><strong>URL actual:</strong> <code id="url"></code></p>
+        <p><strong>Hostname:</strong> <code id="hostname"></code></p>
+        <p><strong>Pathname:</strong> <code id="pathname"></code></p>
+    </div>
+
+    <div class="test">
+        <h3>¿Qué hacer si hay errores?</h3>
+        <ol>
+            <li>Abre las <strong>Herramientas de desarrollador</strong> (F12)</li>
+            <li>Ve a la pestaña <strong>Console</strong></li>
+            <li>Busca mensajes de error en rojo</li>
+            <li>Toma captura y envíamela</li>
+        </ol>
+    </div>
+
+    <div class="test">
+        <a href="index.html" style="background: #4F46E5; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block;">
+            ← Volver a la App Principal
+        </a>
+    </div>
+
+    <script>
+        // Mostrar información de URL
+        document.getElementById('url').textContent = window.location.href;
+        document.getElementById('hostname').textContent = window.location.hostname;
+        document.getElementById('pathname').textContent = window.location.pathname;
+
+        // Test React
+        const reactScript = document.createElement('script');
+        reactScript.src = 'https://unpkg.com/react@18/umd/react.production.min.js';
+        reactScript.onload = () => {
+            const test2 = document.getElementById('test2');
+            test2.textContent = '✅ React carga correctamente';
+        };
+        reactScript.onerror = () => {
+            const test2 = document.getElementById('test2');
+            test2.textContent = '❌ Error cargando React';
+            test2.className = 'test error';
+        };
+        document.head.appendChild(reactScript);
+
+        // Test manifest
+        fetch('manifest.json')
+            .then(response => {
+                if (response.ok) {
+                    document.getElementById('test3').textContent = '✅ manifest.json encontrado';
+                    return response.json();
+                } else {
+                    throw new Error('No se encontró manifest.json');
+                }
+            })
+            .then(data => {
+                console.log('Manifest:', data);
+            })
+            .catch(error => {
+                const test3 = document.getElementById('test3');
+                test3.textContent = '❌ Error: ' + error.message;
+                test3.className = 'test error';
+            });
+
+        // Test iconos
+        const img = new Image();
+        img.onload = () => {
+            document.getElementById('test4').textContent = '✅ Iconos encontrados';
+        };
+        img.onerror = () => {
+            const test4 = document.getElementById('test4');
+            test4.textContent = '❌ Error: No se encontraron los iconos en icons/';
+            test4.className = 'test error';
+        };
+        img.src = 'icons/icon-192.png';
+
+        console.log('=== DIAGNÓSTICO ===');
+        console.log('URL:', window.location.href);
+        console.log('Pathname:', window.location.pathname);
+    </script>
+</body>
+</html>
