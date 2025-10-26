@@ -1,502 +1,640 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>📚 Generador de Problemas Matemáticos</title>
-    <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/vunisal706-droid/Resoluciondeproblemas/main/icons/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="192x192" href="https://raw.githubusercontent.com/vunisal706-droid/Resoluciondeproblemas/main/icons/icon-192.png">
-    <link rel="icon" type="image/png" sizes="512x512" href="https://raw.githubusercontent.com/vunisal706-droid/Resoluciondeproblemas/main/icons/icon-512.png">
-    <script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="UTF-8" />
+  <title>Generador de Problemas Matemáticos</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+    }
+    canvas { 
+      touch-action: none;
+      cursor: crosshair;
+    }
+    .problem-card {
+      background: linear-gradient(to bottom right, #ffffff, #f8fafc);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .problem-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      transition: all 0.3s;
+    }
+    .btn-primary:hover {
+      transform: scale(1.05);
+      box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+    }
+    .canvas-container {
+      background: #fefefe;
+      border: 2px dashed #cbd5e1;
+      border-radius: 12px;
+      position: relative;
+    }
+    .step-number {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      margin-right: 8px;
+    }
+  </style>
 </head>
-<body class="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 min-h-screen">
-    <div class="max-w-7xl mx-auto py-8 px-4">
-        <!-- Header -->
-        <div class="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl shadow-2xl p-8 mb-8 text-white">
-            <h1 class="text-4xl font-bold mb-3 text-center">📚 Generador de Problemas Matemáticos</h1>
-            <p class="text-center text-xl opacity-90">Educación Primaria - Curso 2025/2026</p>
-        </div>
-
-        <!-- Controles -->
-        <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">Curso</label>
-                    <select id="curso" class="w-full p-3 border-2 border-indigo-200 rounded-lg">
-                        <option value="1">1º Primaria</option>
-                        <option value="2">2º Primaria</option>
-                        <option value="3">3º Primaria</option>
-                        <option value="4">4º Primaria</option>
-                        <option value="5">5º Primaria</option>
-                        <option value="6">6º Primaria</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">Mes</label>
-                    <select id="mes" class="w-full p-3 border-2 border-indigo-200 rounded-lg">
-                        <option value="octubre">Octubre</option>
-                        <option value="noviembre">Noviembre</option>
-                        <option value="diciembre">Diciembre</option>
-                        <option value="enero">Enero</option>
-                        <option value="febrero">Febrero</option>
-                        <option value="marzo">Marzo</option>
-                        <option value="abril">Abril</option>
-                        <option value="mayo">Mayo</option>
-                        <option value="junio">Junio</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">Nº Problemas</label>
-                    <select id="numProblemas" class="w-full p-3 border-2 border-indigo-200 rounded-lg">
-                        <option value="1">1 problema</option>
-                        <option value="2">2 problemas</option>
-                        <option value="3">3 problemas</option>
-                    </select>
-                </div>
-            </div>
-            <button onclick="generarProblemas()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors">
-                💡 Generar Problemas
-            </button>
-        </div>
-
-        <!-- Contenedor de problemas -->
-        <div id="problemas"></div>
-
-        <!-- Mensaje inicial -->
-        <div id="mensajeInicial" class="bg-white rounded-xl shadow-lg p-12 text-center">
-            <div class="text-indigo-300 text-6xl mb-4">💡</div>
-            <p class="text-gray-600 text-lg mb-2">Selecciona el curso, mes y número de problemas</p>
-            <p class="text-gray-500">Luego haz clic en "Generar Problemas" para comenzar</p>
-        </div>
+<body class="p-4 md:p-8">
+  <div class="max-w-7xl mx-auto">
+    <!-- Header -->
+    <div class="bg-white rounded-3xl shadow-2xl p-6 md:p-10 mb-8">
+      <h1 class="text-4xl md:text-5xl font-bold text-center mb-2 bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
+        ✨ Generador de Problemas Matemáticos ✨
+      </h1>
+      <p class="text-center text-gray-600 text-lg">Aprende matemáticas de forma divertida</p>
     </div>
 
-    <script>
-        let tiposProblemas = {};
-        let problemasLoaded = false;
+    <!-- Controles -->
+    <div class="bg-white rounded-3xl shadow-2xl p-8 md:p-12 mb-8">
+      <h2 class="text-3xl font-bold text-center mb-8 text-gray-800">Configura tu ejercicio</h2>
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+        <!-- Curso -->
+        <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-6 border-2 border-blue-200 hover:shadow-lg transition">
+          <label class="flex items-center justify-center gap-3 font-bold text-gray-800 mb-4 text-2xl">
+            <span class="text-4xl">📚</span>
+            <span>Curso</span>
+          </label>
+          <select id="curso" class="w-full p-5 border-3 border-blue-300 rounded-xl focus:border-blue-500 focus:outline-none text-xl font-semibold bg-white shadow-md cursor-pointer hover:bg-blue-50 transition">
+            <option value="1">1º Primaria</option>
+            <option value="2">2º Primaria</option>
+            <option value="3">3º Primaria</option>
+            <option value="4">4º Primaria</option>
+            <option value="5">5º Primaria</option>
+            <option value="6">6º Primaria</option>
+          </select>
+        </div>
 
-        // Cargar problemas desde GitHub
-        async function cargarProblemas() {
-            try {
-                const response = await fetch('https://raw.githubusercontent.com/vunisal706-droid/Resoluciondeproblemas/main/LISTA-PROBLEMAS.txt');
-                const texto = await response.text();
-                tiposProblemas = parsearProblemas(texto);
-                problemasLoaded = true;
-                console.log('✅ Problemas cargados correctamente');
-            } catch (error) {
-                console.error('❌ Error al cargar problemas:', error);
-                // Usar problemas de respaldo
-                tiposProblemas = obtenerProblemasRespaldo();
-                problemasLoaded = true;
-            }
-        }
+        <!-- Mes -->
+        <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-2xl p-6 border-2 border-green-200 hover:shadow-lg transition">
+          <label class="flex items-center justify-center gap-3 font-bold text-gray-800 mb-4 text-2xl">
+            <span class="text-4xl">📅</span>
+            <span>Mes</span>
+          </label>
+          <select id="mes" class="w-full p-5 border-3 border-green-300 rounded-xl focus:border-green-500 focus:outline-none text-xl font-semibold bg-white shadow-md cursor-pointer hover:bg-green-50 transition">
+            <option value="octubre">Octubre</option>
+            <option value="noviembre">Noviembre</option>
+            <option value="diciembre">Diciembre</option>
+            <option value="enero">Enero</option>
+            <option value="febrero">Febrero</option>
+            <option value="marzo">Marzo</option>
+            <option value="abril">Abril</option>
+            <option value="mayo">Mayo</option>
+            <option value="junio">Junio</option>
+          </select>
+        </div>
 
-        // Parsear el archivo de texto
-        function parsearProblemas(texto) {
-            const problemas = {};
-            const lineas = texto.split('\n');
-            let cursoActual = null;
-            let mesActual = null;
-            
-            for (let i = 0; i < lineas.length; i++) {
-                let linea = lineas[i].trim();
-                
-                // Ignorar líneas vacías y separadores
-                if (!linea || linea.startsWith('═') || linea.startsWith('─') || 
-                    linea.startsWith('📚') || linea.startsWith('CEIP') || 
-                    linea.startsWith('Curso 2025') || linea.startsWith('Este documento') ||
-                    linea.startsWith('✅') || linea.startsWith('📝') || 
-                    linea.startsWith('TOTAL') || linea.startsWith('📊') ||
-                    linea.startsWith('Documento generado')) continue;
-                
-                // Detectar curso
-                if (linea.match(/🎯\s*(\d+)º\s*DE\s*PRIMARIA/i)) {
-                    cursoActual = linea.match(/(\d+)º/)[1];
-                    problemas[cursoActual] = {};
-                    continue;
-                }
-                
-                // Detectar mes
-                if (linea.match(/📅\s*(\w+)/i)) {
-                    mesActual = linea.match(/📅\s*(\w+)/i)[1].toLowerCase();
-                    if (cursoActual) {
-                        problemas[cursoActual][mesActual] = [];
-                    }
-                    continue;
-                }
-                
-                // Detectar problemas
-                if (cursoActual && mesActual && linea.match(/^[\d\-\.]/)) {
-                    let pregunta = '';
-                    let rango = '';
-                    
-                    // Buscar pregunta en las siguientes líneas
-                    for (let j = i; j < Math.min(i + 3, lineas.length); j++) {
-                        if (lineas[j].includes('?')) {
-                            pregunta = lineas[j].trim();
-                            break;
-                        }
-                    }
-                    
-                    // Buscar rango
-                    for (let j = i; j < Math.min(i + 3, lineas.length); j++) {
-                        if (lineas[j].includes('{')) {
-                            rango = lineas[j].trim();
-                            break;
-                        }
-                    }
-                    
-                    if (pregunta && pregunta.includes('?')) {
-                        const problema = extraerProblema(pregunta, rango);
-                        if (problema) {
-                            problemas[cursoActual][mesActual].push(problema);
-                        }
-                    }
-                }
-            }
-            
-            return problemas;
-        }
-        
-        // Extraer información del problema
-        function extraerProblema(pregunta, rango) {
-            const rangos = [];
-            const matches = rango.match(/\{([\d\.\-]+)\}/g);
-            
-            if (matches) {
-                matches.forEach(match => {
-                    const nums = match.replace(/[{}]/g, '').split('-');
-                    if (nums.length === 2) {
-                        const min = parseFloat(nums[0]);
-                        const max = parseFloat(nums[1]);
-                        const valores = [];
-                        
-                        if (Number.isInteger(min) && Number.isInteger(max)) {
-                            for (let i = min; i <= max; i++) {
-                                valores.push(i);
-                            }
-                        } else {
-                            valores.push(min, (min + max) / 2, max);
-                        }
-                        rangos.push(valores);
-                    }
-                });
-            }
-            
-            if (rangos.length === 0) {
-                rangos.push([2, 3, 4, 5]);
-            }
-            
-            // Determinar operación
-            let op = 'suma';
-            const preguntaLower = pregunta.toLowerCase();
-            if (preguntaLower.includes('resta') || preguntaLower.includes('quit') || 
-                preguntaLower.includes('pierdes') || preguntaLower.includes('comes') ||
-                preguntaLower.includes('regalas')) {
-                op = 'resta';
-            } else if (preguntaLower.includes('multipli') || preguntaLower.includes('cajas') || 
-                       preguntaLower.includes('cada una')) {
-                op = 'multi';
-            } else if (preguntaLower.includes('reparte') || preguntaLower.includes('divid')) {
-                op = 'div';
-            } else if (preguntaLower.includes('mayor') || preguntaLower.includes('menor')) {
-                op = 'comparar';
-            } else if (preguntaLower.includes('ordena')) {
-                op = 'ordenar';
-            } else if (preguntaLower.includes('completa') || preguntaLower.includes('serie')) {
-                op = 'patron';
-            } else if (preguntaLower.includes('partes')) {
-                op = 'fraccion';
-            } else if (preguntaLower.includes('perímetro')) {
-                op = 'perimetro';
-            } else if (preguntaLower.includes('área')) {
-                op = 'area';
-            } else if (preguntaLower.includes('km/h') || preguntaLower.includes('velocidad')) {
-                op = 'velocidad';
-            } else if (preguntaLower.includes('%') || preguntaLower.includes('descuento')) {
-                op = 'porcentaje';
-            }
-            
-            let tipo = 'Problema';
-            if (preguntaLower.includes('suma')) tipo = 'Sumas';
-            else if (preguntaLower.includes('resta')) tipo = 'Restas';
-            else if (preguntaLower.includes('multipli')) tipo = 'Multiplicación';
-            else if (preguntaLower.includes('divid') || preguntaLower.includes('reparte')) tipo = 'División';
-            else if (preguntaLower.includes('€') || preguntaLower.includes('céntimo')) tipo = 'Dinero';
-            else if (preguntaLower.includes('metros') || preguntaLower.includes('mide')) tipo = 'Medidas';
-            
-            return {
-                tipo: tipo,
-                plantilla: pregunta,
-                n1: rangos[0] || [2, 3, 4, 5],
-                n2: rangos[1] || [0],
-                n3: rangos[2] || [0],
-                op: op
-            };
-        }
+        <!-- Número de Problemas -->
+        <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-2xl p-6 border-2 border-purple-200 hover:shadow-lg transition">
+          <label class="flex items-center justify-center gap-3 font-bold text-gray-800 mb-4 text-2xl">
+            <span class="text-4xl">🔢</span>
+            <span>Problemas</span>
+          </label>
+          <select id="numProblemas" class="w-full p-5 border-3 border-purple-300 rounded-xl focus:border-purple-500 focus:outline-none text-xl font-semibold bg-white shadow-md cursor-pointer hover:bg-purple-50 transition">
+            <option value="1">1 problema</option>
+            <option value="2">2 problemas</option>
+            <option value="3">3 problemas</option>
+          </select>
+        </div>
+      </div>
 
-        // Problemas de respaldo
-        function obtenerProblemasRespaldo() {
-            return {
-                '1': {
-                    octubre: [
-                        { tipo: 'Conteo', plantilla: '¿Cuántos lápices hay si tienes {n1} rojos y {n2} azules?', n1: [3,4,5,6], n2: [2,3,4,5], n3: [0], op: 'suma' },
-                        { tipo: 'Sumas', plantilla: 'Si tengo {n1} manzanas y me dan {n2} más, ¿cuántas tengo?', n1: [2,3,4,5], n2: [3,4,5,6], n3: [0], op: 'suma' }
-                    ]
-                },
-                '2': {
-                    octubre: [
-                        { tipo: 'Restas', plantilla: 'Si tienes {n1} manzanas y regalas {n2}, ¿cuántas quedan?', n1: [14,16,18,20], n2: [6,7,8,9], n3: [0], op: 'resta' }
-                    ]
-                }
-            };
-        }
+      <!-- Botón Generar -->
+      <div class="text-center">
+        <button id="btnGenerar" class="btn-primary text-white px-16 py-6 rounded-2xl font-bold text-2xl shadow-2xl transform hover:scale-105 transition-all">
+          <span class="text-3xl mr-3">🎯</span>
+          Generar Problemas
+        </button>
+      </div>
+    </div>
 
-        function random(arr) {
-            return arr[Math.floor(Math.random() * arr.length)];
-        }
+    <!-- Resultados -->
+    <div id="resultado"></div>
+  </div>
 
-        function calcular(n1, n2, n3, op) {
-            switch(op) {
-                case 'suma': return { r: n1 + n2, e: `Sumamos ${n1} + ${n2} = ${n1+n2}` };
-                case 'resta': return { r: n1 - n2, e: `Restamos ${n1} - ${n2} = ${n1-n2}` };
-                case 'multi': return { r: n1 * n2, e: `Multiplicamos ${n1} × ${n2} = ${n1*n2}` };
-                case 'div': return { r: Math.floor(n1/n2), e: `Dividimos ${n1} ÷ ${n2} = ${Math.floor(n1/n2)}` };
-                case 'comparar': return { r: n1 > n2 ? `${n1} es mayor` : n2 > n1 ? `${n2} es mayor` : 'Son iguales', e: `Comparamos ${n1} y ${n2}` };
-                case 'ordenar': return { r: 'Ordena de menor a mayor', e: 'Observa cada número' };
-                case 'patron': return { r: 'Completa el patrón', e: 'Busca la regla de la serie' };
-                case 'fraccion': return { r: `División en partes`, e: 'Divide en partes iguales' };
-                case 'perimetro': 
-                    if (n2 > 0) return { r: 2*(n1+n2), e: `Perímetro = 2×(${n1}+${n2}) = ${2*(n1+n2)} cm` };
-                    return { r: 4*n1, e: `Perímetro = 4×${n1} = ${4*n1} cm` };
-                case 'area': return { r: n1 * n2, e: `Área = ${n1} × ${n2} = ${n1*n2} cm²` };
-                case 'porcentaje': return { r: ((100-n2)*n1/100).toFixed(2), e: `${n1}€ - ${n2}% = ${((100-n2)*n1/100).toFixed(2)}€` };
-                case 'velocidad': return { r: n1*n2, e: `Distancia = ${n1} × ${n2} = ${n1*n2} km` };
-                default: return { r: 'Piensa en la solución', e: 'Usa lo aprendido en clase' };
-            }
-        }
+  <script>
+    // Base de datos completa de problemas
+    const DB = {
+      1: {
+        octubre: [
+          {id:"1-oct-1", t:"María tiene n1 caramelos en su bolsillo. Su amigo Luis le regala n2 caramelos más. ¿Cuántos caramelos tiene María ahora en total?"},
+          {id:"1-oct-2", t:"En una cesta hay n1 manzanas rojas. Ana pone n2 manzanas verdes más en la cesta. ¿Cuántas manzanas hay ahora en la cesta?"},
+          {id:"1-oct-3", t:"Pablo guarda n1 lápices en su estuche azul y n2 lápices en su estuche verde. ¿Cuántos lápices tiene Pablo entre los dos estuches?"}
+        ],
+        noviembre: [
+          {id:"1-nov-1", t:"En la juguetería hay n1 pelotas en un estante. El dueño coloca n2 pelotas más. ¿Cuántas pelotas hay ahora en el estante?"},
+          {id:"1-nov-2", t:"Sara tiene n1 muñecos en su habitación y sus padres le regalan n2 muñecos más por su cumpleaños. ¿Cuántos muñecos tiene Sara ahora?"},
+          {id:"1-nov-3", t:"En el parque hay n1 columpios funcionando. Arreglan n2 columpios que estaban rotos. ¿Cuántos columpios hay disponibles ahora para jugar?"}
+        ],
+        diciembre: [
+          {id:"1-dic-1", t:"En el árbol de Navidad hay n1 bolas rojas y n2 bolas doradas. ¿Cuántas bolas hay en total decorando el árbol?"},
+          {id:"1-dic-2", t:"Carlos recibe n1 regalos de sus abuelos y n2 regalos de sus tíos en Navidad. ¿Cuántos regalos recibió Carlos en total?"},
+          {id:"1-dic-3", t:"En la mesa hay n1 turrones y n2 polvorones. ¿Cuántos dulces hay en total en la mesa?"}
+        ],
+        enero: [
+          {id:"1-ene-1", t:"Los Reyes Magos traen n1 juguetes a una casa. Al día siguiente, los niños reciben n2 juguetes más de sus tíos. ¿Cuántos juguetes tienen ahora?"},
+          {id:"1-ene-2", t:"En la clase hay n1 niños con gorro y n2 niños sin gorro. ¿Cuántos niños hay en total en la clase?"},
+          {id:"1-ene-3", t:"Laura colecciona cromos. Tiene n1 cromos de animales y n2 cromos de deportes. ¿Cuántos cromos tiene Laura en su colección?"}
+        ],
+        febrero: [
+          {id:"1-feb-1", t:"Pedro tiene n1 globos rojos para la fiesta. Su hermana le da n2 globos azules. ¿Cuántos globos tiene Pedro para decorar?"},
+          {id:"1-feb-2", t:"En la pecera hay n1 peces dorados y n2 peces de colores. ¿Cuántos peces nadan en la pecera?"},
+          {id:"1-feb-3", t:"Ana dibuja n1 flores en su cuaderno. Después dibuja n2 flores más. ¿Cuántas flores ha dibujado Ana en total?"}
+        ],
+        marzo: [
+          {id:"1-mar-1", t:"En el jardín hay n1 mariposas amarillas volando. Llegan n2 mariposas más. ¿Cuántas mariposas hay ahora en el jardín?"},
+          {id:"1-mar-2", t:"Luis planta n1 semillas de tomate y n2 semillas de lechuga en su huerto. ¿Cuántas semillas ha plantado Luis en total?"},
+          {id:"1-mar-3", t:"En la granja hay n1 pollitos en el corral y n2 pollitos en el nido. ¿Cuántos pollitos hay en total?"}
+        ],
+        abril: [
+          {id:"1-abr-1", t:"María recoge n1 huevos de Pascua en el jardín. Su hermano encuentra n2 huevos más. ¿Cuántos huevos de Pascua han encontrado entre los dos?"},
+          {id:"1-abr-2", t:"En la librería compran n1 cuentos de princesas y n2 cuentos de piratas. ¿Cuántos cuentos han comprado en total?"},
+          {id:"1-abr-3", t:"Pablo tiene n1 coches de juguete rojos y recibe n2 coches amarillos. ¿Cuántos coches tiene ahora Pablo?"}
+        ],
+        mayo: [
+          {id:"1-may-1", t:"En el florero hay n1 rosas y n2 margaritas. ¿Cuántas flores hay en el florero?"},
+          {id:"1-may-2", t:"Sara tiene n1 cuentas azules y n2 cuentas verdes para hacer un collar. ¿Cuántas cuentas tiene en total?"},
+          {id:"1-may-3", t:"En la playa, Carlos recoge n1 conchas grandes y n2 conchas pequeñas. ¿Cuántas conchas ha recogido Carlos?"}
+        ],
+        junio: [
+          {id:"1-jun-1", t:"En la piscina hay n1 niños nadando y n2 niños jugando en el borde. ¿Cuántos niños hay en total en la piscina?"},
+          {id:"1-jun-2", t:"Laura tiene n1 helados de fresa y compra n2 helados de chocolate. ¿Cuántos helados tiene Laura?"},
+          {id:"1-jun-3", t:"En el parque acuático hay n1 toboganes azules y n2 toboganes rojos. ¿Cuántos toboganes hay en total?"}
+        ]
+      },
 
-        function generarProblemas() {
-            const curso = document.getElementById('curso').value;
-            const mes = document.getElementById('mes').value;
-            const num = parseInt(document.getElementById('numProblemas').value);
-            
-            if (!problemasLoaded) {
-                alert('⏳ Cargando problemas... Espera un momento');
-                setTimeout(generarProblemas, 1000);
-                return;
-            }
-            
-            const plantillas = tiposProblemas[curso]?.[mes] || [];
-            if (plantillas.length === 0) {
-                alert('❌ No hay problemas para esta combinación');
-                return;
-            }
+      2: {
+        octubre: [
+          {id:"2-oct-1", t:"Carlos compra una bolsa con n1 caramelos. Regala n2 caramelos a sus amigos en el recreo. ¿Cuántos caramelos le quedan a Carlos?"},
+          {id:"2-oct-2", t:"En una caja hay n1 lápices de colores. Ana saca n2 lápices para dibujar. ¿Cuántos lápices quedan en la caja?"},
+          {id:"2-oct-3", t:"María tiene n1 cromos en su álbum y pega n2 cromos nuevos que le han regalado. ¿Cuántos cromos tiene ahora María en su álbum?"}
+        ],
+        noviembre: [
+          {id:"2-nov-1", t:"En la biblioteca hay n1 libros de cuentos en un estante. Los niños devuelven n2 libros más. ¿Cuántos libros hay ahora en el estante?"},
+          {id:"2-nov-2", t:"Pedro tiene n1 euros ahorrados. Su abuela le da n2 euros más. ¿Cuántos euros tiene Pedro ahora?"},
+          {id:"2-nov-3", t:"En una granja hay n1 gallinas y n2 pollos. ¿Cuántas aves hay en total en la granja?"}
+        ],
+        diciembre: [
+          {id:"2-dic-1", t:"Sara va a comprar chuches con n1 céntimos. Gasta n2 céntimos en un chicle. ¿Cuántos céntimos le quedan?"},
+          {id:"2-dic-2", t:"En el belén hay n1 figuras de pastores y n2 figuras de ovejas. ¿Cuántas figuras hay en total en el belén?"},
+          {id:"2-dic-3", t:"Luis tiene n1 bolas de adorno y compra n2 bolas más para decorar el árbol. ¿Cuántas bolas tiene ahora Luis?"}
+        ],
+        enero: [
+          {id:"2-ene-1", t:"En la juguetería hay n1 muñecas en un estante. Venden n2 muñecas durante la mañana. ¿Cuántas muñecas quedan en el estante?"},
+          {id:"2-ene-2", t:"Ana tiene n1 pegatinas brillantes y regala n2 pegatinas a su mejor amiga. ¿Cuántas pegatinas le quedan a Ana?"},
+          {id:"2-ene-3", t:"Carlos colecciona n1 coches de juguete. Por los Reyes recibe n2 coches más. ¿Cuántos coches tiene Carlos en su colección ahora?"}
+        ],
+        febrero: [
+          {id:"2-feb-1", t:"En una cuerda para tender hay n1 calcetines. María cuelga n2 calcetines más. ¿Cuántos calcetines hay ahora en la cuerda?"},
+          {id:"2-feb-2", t:"Pedro tiene n1 globos para la fiesta de carnaval. Se le escapan n2 globos volando. ¿Cuántos globos le quedan a Pedro?"},
+          {id:"2-feb-3", t:"En la clase hay n1 disfraces de superhéroes y n2 disfraces de princesas. ¿Cuántos disfraces hay en total?"}
+        ],
+        marzo: [
+          {id:"2-mar-1", t:"Sara planta n1 flores rojas en su jardín. A la semana siguiente planta n2 flores amarillas. ¿Cuántas flores ha plantado Sara en total?"},
+          {id:"2-mar-2", t:"En el parque hay n1 columpios ocupados y n2 columpios libres. ¿Cuántos columpios hay en total en el parque?"},
+          {id:"2-mar-3", t:"Luis tiene n1 canicas de cristal y gana n2 canicas más jugando con sus amigos. ¿Cuántas canicas tiene Luis ahora?"}
+        ],
+        abril: [
+          {id:"2-abr-1", t:"María recoge n1 huevos de chocolate en la búsqueda de Pascua. Su hermano recoge n2 huevos. ¿Cuántos huevos han recogido entre los dos?"},
+          {id:"2-abr-2", t:"En una cesta hay n1 zanahorias y el conejo se come n2 zanahorias. ¿Cuántas zanahorias quedan en la cesta?"},
+          {id:"2-abr-3", t:"Carlos tiene n1 pollitos de juguete y le regalan n2 pollitos más. ¿Cuántos pollitos tiene Carlos ahora?"}
+        ],
+        mayo: [
+          {id:"2-may-1", t:"Ana compra n1 flores para su madre y su padre compra n2 flores más. ¿Cuántas flores tienen para regalar?"},
+          {id:"2-may-2", t:"En el jardín hay n1 mariposas por la mañana. Por la tarde llegan n2 mariposas más. ¿Cuántas mariposas hay en el jardín por la tarde?"},
+          {id:"2-may-3", t:"Pedro tiene n1 caracoles en su terrario y encuentra n2 caracoles más en el jardín. ¿Cuántos caracoles tiene Pedro ahora?"}
+        ],
+        junio: [
+          {id:"2-jun-1", t:"Sara tiene n1 conchas marinas y regala n2 conchas a su amiga. ¿Cuántas conchas le quedan a Sara?"},
+          {id:"2-jun-2", t:"En la playa hay n1 castillos de arena. Los niños construyen n2 castillos más. ¿Cuántos castillos de arena hay ahora?"},
+          {id:"2-jun-3", t:"Luis compra n1 helados para sus amigos y n2 helados para su familia. ¿Cuántos helados ha comprado Luis en total?"}
+        ]
+      },
 
-            document.getElementById('mensajeInicial').style.display = 'none';
-            
-            let html = '<div class="space-y-8">';
-            for (let i = 0; i < num; i++) {
-                const p = random(plantillas);
-                const n1 = random(p.n1);
-                const n2 = p.n2 && p.n2[0] !== 0 ? random(p.n2) : 0;
-                const n3 = p.n3 && p.n3[0] !== 0 ? random(p.n3) : 0;
-                
-                let enunciado = p.plantilla
-                    .replace('{n1}', n1)
-                    .replace('{n2}', n2)
-                    .replace('{n3}', n3)
-                    .replace(/\{[^}]*\}/g, '');
-                
-                const sol = calcular(n1, n2, n3, p.op);
-                
-                html += `
-                    <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-                        <div class="bg-gradient-to-r from-indigo-500 to-purple-500 p-6">
-                            <div class="flex items-start gap-3">
-                                <div class="bg-white text-indigo-700 font-bold rounded-full w-10 h-10 flex items-center justify-center text-lg">${i+1}</div>
-                                <div class="flex-1">
-                                    <span class="inline-block bg-white/20 text-white text-xs font-semibold px-3 py-1 rounded-full mb-2">${p.tipo}</span>
-                                    <p class="text-xl text-white leading-relaxed font-medium">${enunciado}</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="p-6 space-y-4">
-                            <div class="border-2 border-blue-300 rounded-lg p-4 bg-blue-50">
-                                <h3 class="text-lg font-bold text-blue-900 mb-2">📖 COMPRENDER</h3>
-                                <canvas id="canvas-comprender-${i}" class="w-full border-2 border-blue-400 rounded-lg bg-white cursor-crosshair" height="200"></canvas>
-                                <div class="mt-2 flex gap-2 flex-wrap">
-                                    <button onclick="cambiarColor('canvas-comprender-${i}', 'black')" class="px-3 py-1 bg-black text-white rounded text-sm">Negro</button>
-                                    <button onclick="cambiarColor('canvas-comprender-${i}', 'blue')" class="px-3 py-1 bg-blue-500 text-white rounded text-sm">Azul</button>
-                                    <button onclick="cambiarColor('canvas-comprender-${i}', 'red')" class="px-3 py-1 bg-red-500 text-white rounded text-sm">Rojo</button>
-                                    <button onclick="limpiarCanvas('canvas-comprender-${i}')" class="px-3 py-1 bg-gray-500 text-white rounded text-sm">🗑️ Borrar</button>
-                                </div>
-                            </div>
-                            <div class="border-2 border-green-300 rounded-lg p-4 bg-green-50">
-                                <h3 class="text-lg font-bold text-green-900 mb-2">📋 PLANIFICAR</h3>
-                                <canvas id="canvas-planificar-${i}" class="w-full border-2 border-green-400 rounded-lg bg-white cursor-crosshair" height="200"></canvas>
-                                <div class="mt-2 flex gap-2 flex-wrap">
-                                    <button onclick="cambiarColor('canvas-planificar-${i}', 'black')" class="px-3 py-1 bg-black text-white rounded text-sm">Negro</button>
-                                    <button onclick="cambiarColor('canvas-planificar-${i}', 'blue')" class="px-3 py-1 bg-blue-500 text-white rounded text-sm">Azul</button>
-                                    <button onclick="cambiarColor('canvas-planificar-${i}', 'red')" class="px-3 py-1 bg-red-500 text-white rounded text-sm">Rojo</button>
-                                    <button onclick="limpiarCanvas('canvas-planificar-${i}')" class="px-3 py-1 bg-gray-500 text-white rounded text-sm">🗑️ Borrar</button>
-                                </div>
-                            </div>
-                            <div class="border-2 border-orange-300 rounded-lg p-4 bg-orange-50">
-                                <h3 class="text-lg font-bold text-orange-900 mb-2">✏️ EJECUTAR</h3>
-                                <canvas id="canvas-ejecutar-${i}" class="w-full border-2 border-orange-400 rounded-lg bg-white cursor-crosshair" height="200"></canvas>
-                                <div class="mt-2 flex gap-2 flex-wrap">
-                                    <button onclick="cambiarColor('canvas-ejecutar-${i}', 'black')" class="px-3 py-1 bg-black text-white rounded text-sm">Negro</button>
-                                    <button onclick="cambiarColor('canvas-ejecutar-${i}', 'blue')" class="px-3 py-1 bg-blue-500 text-white rounded text-sm">Azul</button>
-                                    <button onclick="cambiarColor('canvas-ejecutar-${i}', 'red')" class="px-3 py-1 bg-red-500 text-white rounded text-sm">Rojo</button>
-                                    <button onclick="limpiarCanvas('canvas-ejecutar-${i}')" class="px-3 py-1 bg-gray-500 text-white rounded text-sm">🗑️ Borrar</button>
-                                </div>
-                            </div>
-                            <div class="border-2 border-purple-300 rounded-lg p-4 bg-purple-50">
-                                <h3 class="text-lg font-bold text-purple-900 mb-2">✅ VERIFICAR</h3>
-                                <canvas id="canvas-verificar-${i}" class="w-full border-2 border-purple-400 rounded-lg bg-white cursor-crosshair" height="200"></canvas>
-                                <div class="mt-2 flex gap-2 flex-wrap">
-                                    <button onclick="cambiarColor('canvas-verificar-${i}', 'black')" class="px-3 py-1 bg-black text-white rounded text-sm">Negro</button>
-                                    <button onclick="cambiarColor('canvas-verificar-${i}', 'blue')" class="px-3 py-1 bg-blue-500 text-white rounded text-sm">Azul</button>
-                                    <button onclick="cambiarColor('canvas-verificar-${i}', 'red')" class="px-3 py-1 bg-red-500 text-white rounded text-sm">Rojo</button>
-                                    <button onclick="limpiarCanvas('canvas-verificar-${i}')" class="px-3 py-1 bg-gray-500 text-white rounded text-sm">🗑️ Borrar</button>
-                                </div>
-                            </div>
-                            <div class="border-2 border-pink-300 rounded-lg p-4 bg-pink-50">
-                                <h3 class="text-lg font-bold text-pink-900 mb-2">🎯 SOLUCIÓN FINAL</h3>
-                                <canvas id="canvas-solucion-${i}" class="w-full border-2 border-pink-400 rounded-lg bg-white cursor-crosshair" height="200"></canvas>
-                                <div class="mt-2 flex gap-2 flex-wrap">
-                                    <button onclick="cambiarColor('canvas-solucion-${i}', 'black')" class="px-3 py-1 bg-black text-white rounded text-sm">Negro</button>
-                                    <button onclick="cambiarColor('canvas-solucion-${i}', 'blue')" class="px-3 py-1 bg-blue-500 text-white rounded text-sm">Azul</button>
-                                    <button onclick="cambiarColor('canvas-solucion-${i}', 'red')" class="px-3 py-1 bg-red-500 text-white rounded text-sm">Rojo</button>
-                                    <button onclick="limpiarCanvas('canvas-solucion-${i}')" class="px-3 py-1 bg-gray-500 text-white rounded text-sm">🗑️ Borrar</button>
-                                </div>
-                            </div>
-                            <button onclick="toggleSol(${i})" class="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-4 rounded-lg transition-colors">
-                                ✓ Ver Solución del Profesor
-                            </button>
-                            <div id="sol-${i}" style="display:none" class="mt-4 p-5 bg-green-50 border-2 border-green-200 rounded-lg">
-                                <h3 class="text-green-900 font-bold mb-2">💡 Explicación:</h3>
-                                <p class="text-green-800 mb-3">${sol.e}</p>
-                                <h3 class="text-green-900 font-bold mb-2">✓ Solución:</h3>
-                                <p class="text-green-800 font-semibold text-xl">${sol.r}</p>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }
-            html += '</div>';
-            document.getElementById('problemas').innerHTML = html;
-            
-            // Inicializar canvas
-            setTimeout(() => {
-                for (let i = 0; i < num; i++) {
-                    inicializarCanvas(`canvas-comprender-${i}`);
-                    inicializarCanvas(`canvas-planificar-${i}`);
-                    inicializarCanvas(`canvas-ejecutar-${i}`);
-                    inicializarCanvas(`canvas-verificar-${i}`);
-                    inicializarCanvas(`canvas-solucion-${i}`);
-                }
-            }, 100);
-        }
+      3: {
+        octubre: [
+          {id:"3-oct-1", t:"En una tienda hay n1 paquetes de galletas. Cada paquete contiene n2 galletas. ¿Cuántas galletas hay en total en la tienda?"},
+          {id:"3-oct-2", t:"María tiene n1 cajas de colores. En cada caja hay n2 lápices de colores. ¿Cuántos lápices tiene María en total?"},
+          {id:"3-oct-3", t:"Carlos compra n1 bolsas de caramelos. Cada bolsa contiene n2 caramelos. ¿Cuántos caramelos ha comprado Carlos?"}
+        ],
+        noviembre: [
+          {id:"3-nov-1", t:"En una granja hay n1 corrales. En cada corral hay n2 conejos. ¿Cuántos conejos hay en total en la granja?"},
+          {id:"3-nov-2", t:"Sara reparte n1 cromos entre n2 amigos, dándole la misma cantidad a cada uno. ¿Cuántos cromos recibe cada amigo?"},
+          {id:"3-nov-3", t:"Pedro tiene n1 paquetes de pegatinas. Cada paquete tiene n2 pegatinas. ¿Cuántas pegatinas tiene Pedro en total?"}
+        ],
+        diciembre: [
+          {id:"3-dic-1", t:"Luis compra n1 cajas de turrones para Navidad. Cada caja cuesta n2 euros. ¿Cuánto dinero gasta Luis en total?"},
+          {id:"3-dic-2", t:"En una tienda de juguetes hay n1 estantes. En cada estante hay n2 muñecos. ¿Cuántos muñecos hay en total?"},
+          {id:"3-dic-3", t:"Ana reparte n1 bombones entre n2 personas de su familia. ¿Cuántos bombones recibe cada persona si los reparte en partes iguales?"}
+        ],
+        enero: [
+          {id:"3-ene-1", t:"María tiene n1 álbumes de cromos. Cada álbum tiene n2 páginas. ¿Cuántas páginas hay en total entre todos los álbumes?"},
+          {id:"3-ene-2", t:"Carlos compra n1 paquetes de chicles. Cada paquete contiene n2 chicles. ¿Cuántos chicles tiene Carlos?"},
+          {id:"3-ene-3", t:"En una escuela hay n1 clases de tercero. En cada clase hay n2 estudiantes. ¿Cuántos estudiantes de tercero hay en total?"}
+        ],
+        febrero: [
+          {id:"3-feb-1", t:"Sara tiene n1 cajas de pinturas. Cada caja contiene n2 pinturas. ¿Cuántas pinturas tiene Sara en total?"},
+          {id:"3-feb-2", t:"Pedro reparte n1 globos entre n2 niños en una fiesta. ¿Cuántos globos recibe cada niño si los reparte equitativamente?"},
+          {id:"3-feb-3", t:"Luis tiene n1 bolsas con n2 canicas cada una. ¿Cuántas canicas tiene Luis en total?"}
+        ],
+        marzo: [
+          {id:"3-mar-1", t:"En un jardín hay n1 macetas. En cada maceta hay n2 flores plantadas. ¿Cuántas flores hay en total en el jardín?"},
+          {id:"3-mar-2", t:"Ana compra n1 paquetes de semillas. Cada paquete contiene n2 semillas. ¿Cuántas semillas ha comprado Ana?"},
+          {id:"3-mar-3", t:"Carlos divide n1 lápices entre n2 estuches, poniendo la misma cantidad en cada uno. ¿Cuántos lápices hay en cada estuche?"}
+        ],
+        abril: [
+          {id:"3-abr-1", t:"María compra n1 hueveras. Cada huevera tiene capacidad para n2 huevos. ¿Cuántos huevos puede guardar en total?"},
+          {id:"3-abr-2", t:"En una librería hay n1 estanterías. En cada estantería hay n2 libros. ¿Cuántos libros hay en la librería?"},
+          {id:"3-abr-3", t:"Pedro reparte n1 gominolas entre n2 amigos. ¿Cuántas gominolas recibe cada amigo?"}
+        ],
+        mayo: [
+          {id:"3-may-1", t:"Sara tiene n1 ramos de flores. Cada ramo tiene n2 flores. ¿Cuántas flores tiene Sara en total?"},
+          {id:"3-may-2", t:"Luis organiza n1 mesas para una fiesta. En cada mesa sienta n2 personas. ¿Cuántas personas pueden sentarse en total?"},
+          {id:"3-may-3", t:"Ana compra n1 bolsas de fresas. Cada bolsa contiene n2 fresas. ¿Cuántas fresas ha comprado Ana?"}
+        ],
+        junio: [
+          {id:"3-jun-1", t:"Carlos tiene n1 cubos de arena. En cada cubo caben n2 litros de agua. ¿Cuántos litros de agua puede llenar en total?"},
+          {id:"3-jun-2", t:"María reparte n1 helados entre n2 niños en la playa. ¿Cuántos helados recibe cada niño?"},
+          {id:"3-jun-3", t:"Pedro compra n1 paquetes de piruletas. Cada paquete contiene n2 piruletas. ¿Cuántas piruletas tiene Pedro?"}
+        ]
+      },
 
-        // Sistema de dibujo
-        const canvasData = {};
+      4: {
+        octubre: [
+          {id:"4-oct-1", t:"En una biblioteca hay n1 estanterías. Cada estantería tiene n2 libros. Si retiran 15 libros para una exposición, ¿cuántos libros quedan en las estanterías?"},
+          {id:"4-oct-2", t:"María ahorra n1 euros cada mes. ¿Cuánto dinero habrá ahorrado después de n2 meses?"},
+          {id:"4-oct-3", t:"Carlos compra n1 cajas de rotuladores. Cada caja contiene n2 rotuladores y cuesta 8 euros. ¿Cuánto dinero gasta en total y cuántos rotuladores tiene?"}
+        ],
+        noviembre: [
+          {id:"4-nov-1", t:"Una panadería produce n1 barras de pan cada hora. ¿Cuántas barras producirá en n2 horas de trabajo?"},
+          {id:"4-nov-2", t:"Sara tiene n1 pegatinas y las reparte equitativamente entre n2 amigos. ¿Cuántas pegatinas recibe cada amigo?"},
+          {id:"4-nov-3", t:"Pedro compra n1 paquetes de galletas que cuestan n2 euros cada uno. Paga con un billete de 50 euros. ¿Cuánto dinero le devuelven?"}
+        ],
+        diciembre: [
+          {id:"4-dic-1", t:"Luis compra n1 cajas de bombones para regalar. Cada caja contiene n2 bombones. Si regala 3 cajas completas, ¿cuántos bombones le quedan?"},
+          {id:"4-dic-2", t:"Ana recorre n1 kilómetros cada día durante n2 días. ¿Cuántos kilómetros ha recorrido en total?"},
+          {id:"4-dic-3", t:"En una tienda hay n1 estantes con n2 juguetes cada uno. Si venden la mitad de los juguetes, ¿cuántos juguetes quedan en la tienda?"}
+        ],
+        enero: [
+          {id:"4-ene-1", t:"María colecciona n1 cromos cada semana. ¿Cuántos cromos habrá coleccionado después de n2 semanas?"},
+          {id:"4-ene-2", t:"Carlos tiene n1 cajas con n2 lápices en cada caja. Regala una caja completa. ¿Cuántos lápices le quedan?"},
+          {id:"4-ene-3", t:"Sara reparte n1 caramelos equitativamente entre n2 niños. ¿Cuántos caramelos recibe cada niño y cuántos sobran?"}
+        ],
+        febrero: [
+          {id:"4-feb-1", t:"Pedro tiene n1 paquetes de pegatinas con n2 pegatinas cada uno. Usa 10 pegatinas para decorar su cuaderno. ¿Cuántas pegatinas le quedan?"},
+          {id:"4-feb-2", t:"Luis lee n1 páginas de un libro cada día durante n2 días. Si el libro tiene 200 páginas, ¿cuántas páginas le faltan por leer?"},
+          {id:"4-feb-3", t:"Ana compra n1 bolsas de chuches a n2 euros cada una. Si paga con 20 euros, ¿cuánto dinero le devuelven?"}
+        ],
+        marzo: [
+          {id:"4-mar-1", t:"María planta n1 filas de flores con n2 flores en cada fila. Si se marchitan 8 flores, ¿cuántas flores quedan en buen estado?"},
+          {id:"4-mar-2", t:"Carlos tiene n1 cajas con n2 ceras de colores cada una. Pierde una caja completa. ¿Cuántas ceras le quedan?"},
+          {id:"4-mar-3", t:"Sara reparte n1 cromos entre n2 amigas de manera equitativa. ¿Cuántos cromos recibe cada amiga?"}
+        ],
+        abril: [
+          {id:"4-abr-1", t:"Pedro compra n1 paquetes de chicles. Cada paquete contiene n2 chicles y cuesta 3 euros. ¿Cuánto gasta en total y cuántos chicles tiene?"},
+          {id:"4-abr-2", t:"Luis tiene n1 álbumes de fotos con n2 fotos en cada álbum. Añade 12 fotos nuevas a uno de los álbumes. ¿Cuántas fotos tiene ahora en total?"},
+          {id:"4-abr-3", t:"Ana organiza n1 mesas para una fiesta. En cada mesa sientan n2 personas. Si llegan 5 personas más, ¿cuántas personas hay en total?"}
+        ],
+        mayo: [
+          {id:"4-may-1", t:"María ahorra n1 euros en enero, n2 euros en febrero y el doble de febrero en marzo. ¿Cuánto dinero ha ahorrado en total en los tres meses?"},
+          {id:"4-may-2", t:"Carlos compra n1 bolsas de caramelos con n2 caramelos cada una. Come 7 caramelos. ¿Cuántos caramelos le quedan?"},
+          {id:"4-may-3", t:"Sara reparte n1 globos entre n2 niños. Si sobran algunos globos, ¿cuántos recibe cada niño y cuántos sobran?"}
+        ],
+        junio: [
+          {id:"4-jun-1", t:"Pedro va a la playa n1 días durante las vacaciones. Cada día recoge n2 conchas. ¿Cuántas conchas ha recogido en total?"},
+          {id:"4-jun-2", t:"Luis compra n1 helados a n2 euros cada uno. Si paga con un billete de 50 euros, ¿cuánto dinero le devuelven?"},
+          {id:"4-jun-3", t:"Ana tiene n1 cajas de juguetes con n2 juguetes en cada caja. Regala 15 juguetes en total. ¿Cuántos juguetes le quedan?"}
+        ]
+      },
 
-        function inicializarCanvas(canvasId) {
-            const canvas = document.getElementById(canvasId);
-            if (!canvas) return;
-            
-            const ctx = canvas.getContext('2d');
-            canvas.width = canvas.offsetWidth;
-            
-            canvasData[canvasId] = {
-                ctx: ctx,
-                dibujando: false,
-                color: 'black',
-                grosor: 3
-            };
-            
-            canvas.addEventListener('mousedown', (e) => iniciarDibujo(e, canvasId));
-            canvas.addEventListener('mousemove', (e) => dibujar(e, canvasId));
-            canvas.addEventListener('mouseup', () => detenerDibujo(canvasId));
-            canvas.addEventListener('mouseout', () => detenerDibujo(canvasId));
-            
-            canvas.addEventListener('touchstart', (e) => {
-                e.preventDefault();
-                const touch = e.touches[0];
-                const rect = canvas.getBoundingClientRect();
-                const mouseEvent = { clientX: touch.clientX, clientY: touch.clientY, target: canvas };
-                iniciarDibujo(mouseEvent, canvasId);
-            });
-            
-            canvas.addEventListener('touchmove', (e) => {
-                e.preventDefault();
-                const touch = e.touches[0];
-                const mouseEvent = { clientX: touch.clientX, clientY: touch.clientY, target: canvas };
-                dibujar(mouseEvent, canvasId);
-            });
-            
-            canvas.addEventListener('touchend', (e) => {
-                e.preventDefault();
-                detenerDibujo(canvasId);
-            });
-        }
+      5: {
+        octubre: [
+          {id:"5-oct-1", t:"Una tienda vende n1 cajas de zumos. Cada caja contiene n2 botellas y cada botella cuesta 2,50 euros. ¿Cuál es el valor total de todos los zumos?"},
+          {id:"5-oct-2", t:"María tiene n1 paquetes de cromos. Cada paquete contiene n2 cromos. Si regala la tercera parte de los cromos, ¿cuántos cromos le quedan?"},
+          {id:"5-oct-3", t:"Carlos va al cine con n1 amigos. Cada entrada cuesta n2 euros y también compran palomitas por 5 euros cada uno. ¿Cuánto gastan en total entre todos?"}
+        ],
+        noviembre: [
+          {id:"5-nov-1", t:"En una biblioteca hay n1 estanterías con n2 libros cada una. Si prestan 45 libros, ¿cuántos libros quedan en la biblioteca?"},
+          {id:"5-nov-2", t:"Sara compra n1 bolsas de manzanas. Cada bolsa contiene n2 manzanas y pesa 3 kg. ¿Cuál es el peso total de todas las manzanas?"},
+          {id:"5-nov-3", t:"Pedro ahorra n1 euros cada semana durante n2 semanas. Si gasta la cuarta parte en un videojuego, ¿cuánto dinero le queda?"}
+        ],
+        diciembre: [
+          {id:"5-dic-1", t:"Luis compra n1 cajas de bombones para regalar en Navidad. Cada caja contiene n2 bombones y cuesta 12 euros. ¿Cuánto gasta en total y cuántos bombones tiene?"},
+          {id:"5-dic-2", t:"Ana tiene n1 paquetes de adornos navideños con n2 adornos en cada paquete. Usa 18 adornos para decorar el árbol. ¿Cuántos adornos le quedan?"},
+          {id:"5-dic-3", t:"María reparte n1 regalos entre n2 familiares de forma equitativa. Si compró cada regalo por 8 euros, ¿cuánto gastó en total?"}
+        ],
+        enero: [
+          {id:"5-ene-1", t:"Carlos recibe n1 euros de cada uno de sus n2 tíos por Reyes. Si ya tenía ahorrados 50 euros, ¿cuánto dinero tiene ahora?"},
+          {id:"5-ene-2", t:"Sara tiene n1 cajas de juguetes con n2 juguetes en cada caja. Dona la quinta parte de los juguetes a una ONG. ¿Cuántos juguetes le quedan?"},
+          {id:"5-ene-3", t:"Pedro compra n1 libros que cuestan n2 euros cada uno. Si tiene un descuento del 10%, ¿cuánto paga en total?"}
+        ],
+        febrero: [
+          {id:"5-feb-1", t:"Luis recorre n1 kilómetros cada día durante n2 días entrenando para una carrera. Si la carrera es de 100 km, ¿cuántos kilómetros le faltan por entrenar?"},
+          {id:"5-feb-2", t:"Ana compra n1 bolsas de chuches con n2 chuches cada una para una fiesta. Si invita a 15 niños y reparte todas las chuches equitativamente, ¿cuántas chuches recibe cada niño?"},
+          {id:"5-feb-3", t:"María tiene n1 paquetes de globos con n2 globos cada uno. Infla la mitad de los globos. ¿Cuántos globos ha inflado?"}
+        ],
+        marzo: [
+          {id:"5-mar-1", t:"Carlos planta n1 filas de tomates con n2 plantas en cada fila. Si cada planta produce 8 tomates, ¿cuántos tomates recogerá en total?"},
+          {id:"5-mar-2", t:"Sara compra n1 cajas de rotuladores con n2 rotuladores cada una. Cada caja cuesta 6,50 euros. ¿Cuánto gasta en total?"},
+          {id:"5-mar-3", t:"Pedro tiene n1 álbumes de cromos con n2 cromos en cada álbum. Si le faltan 25 cromos para completar todos los álbumes que tienen 200 cromos cada uno, ¿cuántos cromos tiene?"}
+        ],
+        abril: [
+          {id:"5-abr-1", t:"Luis compra n1 paquetes de semillas con n2 semillas cada uno para su huerto. Planta tres cuartas partes de las semillas. ¿Cuántas semillas ha plantado?"},
+          {id:"5-abr-2", t:"Ana organiza n1 equipos para un torneo. Cada equipo tiene n2 jugadores. Si cada jugador paga 3 euros de inscripción, ¿cuánto dinero se recauda?"},
+          {id:"5-abr-3", t:"María compra n1 cajas de huevos de Pascua con n2 huevos en cada caja. Cada huevo cuesta 2,75 euros. ¿Cuál es el coste total?"}
+        ],
+        mayo: [
+          {id:"5-may-1", t:"Carlos tiene n1 macetas con n2 flores en cada una. Si regala 3 macetas completas a su madre, ¿cuántas flores le quedan?"},
+          {id:"5-may-2", t:"Sara lee n1 páginas cada día de un libro de n2 páginas. ¿Cuántos días tardará en terminar el libro?"},
+          {id:"5-may-3", t:"Pedro compra n1 bolsas de fresas con n2 fresas cada una. Si hace tartas usando 8 fresas por tarta, ¿cuántas tartas puede hacer?"}
+        ],
+        junio: [
+          {id:"5-jun-1", t:"Luis va n1 días a la playa durante las vacaciones. Cada día recoge n2 conchas. Si regala la mitad de las conchas, ¿cuántas conchas le quedan?"},
+          {id:"5-jun-2", t:"Ana compra n1 helados a n2 euros cada uno para su familia. Si paga con un billete de 50 euros, ¿cuánto dinero le devuelven?"},
+          {id:"5-jun-3", t:"María organiza n1 mesas en una fiesta con n2 sillas en cada mesa. Si llegan 85 invitados, ¿sobran o faltan sillas y cuántas?"}
+        ]
+      },
 
-        function iniciarDibujo(e, canvasId) {
-            const data = canvasData[canvasId];
-            if (!data) return;
-            
-            data.dibujando = true;
-            const rect = e.target.getBoundingClientRect();
-            data.ultimoX = e.clientX - rect.left;
-            data.ultimoY = e.clientY - rect.top;
-        }
+      6: {
+        octubre: [
+          {id:"6-oct-1", t:"Una empresa produce n1 cajas de galletas al día. Cada caja contiene n2 paquetes y cada paquete tiene 12 galletas. ¿Cuántas galletas producen en una semana (7 días)?"},
+          {id:"6-oct-2", t:"Carlos compra n1 libros que cuestan n2 euros cada uno. Si tiene un cupón de descuento del 15%, ¿cuánto pagará en total?"},
+          {id:"6-oct-3", t:"María tiene n1 cajas de rotuladores con n2 rotuladores en cada caja. Si regala 2 cajas completas y después usa 15 rotuladores, ¿cuántos rotuladores le quedan?"}
+        ],
+        noviembre: [
+          {id:"6-nov-1", t:"Sara ahorra n1 euros cada mes durante n2 meses. Si gasta dos quintas partes en un regalo, ¿cuánto dinero le queda?"},
+          {id:"6-nov-2", t:"Pedro organiza n1 equipos deportivos con n2 jugadores cada uno. Cada jugador paga 25 euros de inscripción. ¿Cuánto dinero se recauda en total?"},
+          {id:"6-nov-3", t:"Luis compra n1 paquetes de cromos con n2 cromos en cada paquete. Si intercambia la tercera parte de los cromos, ¿cuántos cromos intercambia?"}
+        ],
+        diciembre: [
+          {id:"6-dic-1", t:"Ana compra n1 cajas de turrones que cuestan n2 euros cada una. También compra 3 botellas de sidra a 4,50 euros cada una. ¿Cuánto gasta en total?"},
+          {id:"6-dic-2", t:"Carlos reparte n1 regalos entre n2 familiares. Si cada regalo costó 18 euros y tiene un descuento del 20% en el total, ¿cuánto pagó?"},
+          {id:"6-dic-3", t:"María tiene n1 cajas de bombones con n2 bombones en cada caja. Si come 5 bombones de cada caja, ¿cuántos bombones le quedan en total?"}
+        ],
+        enero: [
+          {id:"6-ene-1", t:"Sara recibe n1 euros de cada uno de sus n2 familiares por Reyes. Si ya tenía ahorrados 125 euros y gasta la cuarta parte en un videojuego, ¿cuánto dinero le queda?"},
+          {id:"6-ene-2", t:"Pedro compra n1 juegos de mesa que cuestan n2 euros cada uno. Si paga con un billete de 100 euros, ¿cuánto dinero le devuelven?"},
+          {id:"6-ene-3", t:"Luis tiene n1 paquetes de pegatinas con n2 pegatinas cada uno. Regala el 40% de las pegatinas. ¿Cuántas pegatinas regala?"}
+        ],
+        febrero: [
+          {id:"6-feb-1", t:"Ana entrena n1 horas cada día durante n2 días. Si cada hora de entrenamiento quema 450 calorías, ¿cuántas calorías quema en total?"},
+          {id:"6-feb-2", t:"Carlos compra n1 bolsas de chuches con n2 chuches cada una. Si reparte todas las chuches equitativamente entre 18 niños, ¿cuántas chuches recibe cada niño?"},
+          {id:"6-feb-3", t:"María organiza n1 mesas para una cena con n2 personas en cada mesa. Si cada persona paga 15 euros, ¿cuánto dinero se recauda?"}
+        ],
+        marzo: [
+          {id:"6-mar-1", t:"Sara planta n1 filas de lechugas con n2 lechugas en cada fila. Si cada lechuga se vende a 1,20 euros, ¿cuánto dinero obtendrá si vende todas?"},
+          {id:"6-mar-2", t:"Pedro tiene n1 cajas de herramientas con n2 herramientas en cada caja. Compra 12 herramientas más. ¿Cuántas herramientas tiene ahora?"},
+          {id:"6-mar-3", t:"Luis recorre n1 kilómetros cada día durante n2 días. Si su objetivo es recorrer 500 km en total, ¿cuántos kilómetros le faltan?"}
+        ],
+        abril: [
+          {id:"6-abr-1", t:"Ana compra n1 paquetes de semillas con n2 semillas cada uno. Planta cinco sextas partes de las semillas. ¿Cuántas semillas ha plantado?"},
+          {id:"6-abr-2", t:"Carlos organiza n1 grupos para una excursión. Cada grupo tiene n2 personas. Si cada persona paga 8,50 euros, ¿cuánto dinero se recauda?"},
+          {id:"6-abr-3", t:"María compra n1 libros que cuestan n2 euros cada uno. Si tiene un descuento del 25% y paga con 60 euros, ¿cuánto dinero le devuelven?"}
+        ],
+        mayo: [
+          {id:"6-may-1", t:"Sara tiene n1 álbumes de fotos con n2 fotos en cada álbum. Si añade 35 fotos nuevas repartidas equitativamente entre todos los álbumes, ¿cuántas fotos hay ahora en cada álbum?"},
+          {id:"6-may-2", t:"Pedro compra n1 ramos de flores con n2 flores cada uno. Cada ramo cuesta 12,75 euros. ¿Cuánto gasta en total?"},
+          {id:"6-may-3", t:"Luis tiene n1 cajas de tornillos con n2 tornillos en cada caja. Usa 3/5 de los tornillos en un proyecto. ¿Cuántos tornillos ha usado?"}
+        ],
+        junio: [
+          {id:"6-jun-1", t:"Ana va n1 días a la playa durante las vacaciones. Cada día recoge n2 conchas y gasta 15 euros en helados. ¿Cuántas conchas recoge en total y cuánto gasta en helados?"},
+          {id:"6-jun-2", t:"Carlos compra n1 tablas de surf que cuestan n2 euros cada una. Si obtiene un descuento del 18%, ¿cuánto paga en total?"},
+          {id:"6-jun-3", t:"María organiza n1 competiciones con n2 participantes cada una. Si cada participante paga 6,50 euros de inscripción, ¿cuánto dinero se recauda en total?"}
+        ]
+      }
+    };
 
-        function dibujar(e, canvasId) {
-            const data = canvasData[canvasId];
-            if (!data || !data.dibujando) return;
-            
-            const rect = e.target.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            
-            data.ctx.beginPath();
-            data.ctx.strokeStyle = data.color;
-            data.ctx.lineWidth = data.grosor;
-            data.ctx.lineCap = 'round';
-            data.ctx.moveTo(data.ultimoX, data.ultimoY);
-            data.ctx.lineTo(x, y);
-            data.ctx.stroke();
-            
-            data.ultimoX = x;
-            data.ultimoY = y;
-        }
+    const LS_KEY = 'problemasUsados';
+    let usados = {};
+    try {
+      usados = JSON.parse(localStorage.getItem(LS_KEY) || '{}');
+    } catch(e) {
+      usados = {};
+    }
 
-        function detenerDibujo(canvasId) {
-            const data = canvasData[canvasId];
-            if (data) data.dibujando = false;
-        }
+    function personalizarEnunciado(base) {
+      const nombres = ["Ana","Luis","María","Pedro","Sara","David","Lucía","Carlos","Pablo","Nora","Hugo","Carmen","Javier","Elena","Diego"];
+      const n1 = Math.floor(Math.random() * 15) + 3;
+      const n2 = Math.floor(Math.random() * 15) + 3;
+      const nombre = nombres[Math.floor(Math.random() * nombres.length)];
+      return base
+        .replace(/n1/g, n1)
+        .replace(/n2/g, n2)
+        .replace(/nombre/g, nombre);
+    }
 
-        function cambiarColor(canvasId, color) {
-            if (canvasData[canvasId]) {
-                canvasData[canvasId].color = color;
-            }
-        }
+    function activarDibujo() {
+      document.querySelectorAll('canvas[data-draw]').forEach(canvas => {
+        const ctx = canvas.getContext('2d');
+        ctx.lineWidth = 4;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.strokeStyle = '#6366f1';
 
-        function limpiarCanvas(canvasId) {
-            const canvas = document.getElementById(canvasId);
-            if (canvas && canvasData[canvasId]) {
-                canvasData[canvasId].ctx.clearRect(0, 0, canvas.width, canvas.height);
-            }
-        }
+        let dibujando = false;
+        let ultimoX = 0;
+        let ultimoY = 0;
 
-        function toggleSol(i) {
-            const sol = document.getElementById('sol-' + i);
-            sol.style.display = sol.style.display === 'none' ? 'block' : 'none';
-        }
+        const getPos = e => {
+          const rect = canvas.getBoundingClientRect();
+          const scaleX = canvas.width / rect.width;
+          const scaleY = canvas.height / rect.height;
+          const point = e.touches ? e.touches[0] : e;
+          return { 
+            x: (point.clientX - rect.left) * scaleX, 
+            y: (point.clientY - rect.top) * scaleY 
+          };
+        };
 
-        // Cargar problemas al iniciar
-        cargarProblemas();
-    </script>
+        const start = e => { 
+          e.preventDefault(); 
+          dibujando = true; 
+          const {x,y} = getPos(e); 
+          ultimoX = x;
+          ultimoY = y;
+          ctx.beginPath(); 
+          ctx.moveTo(x, y); 
+        };
+
+        const move = e => { 
+          if(!dibujando) return; 
+          e.preventDefault(); 
+          const {x,y} = getPos(e); 
+          ctx.lineTo(x, y); 
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.moveTo(x, y);
+        };
+
+        const end = e => { 
+          e.preventDefault(); 
+          dibujando = false; 
+        };
+
+        canvas.addEventListener('mousedown', start);
+        canvas.addEventListener('mousemove', move);
+        canvas.addEventListener('mouseup', end);
+        canvas.addEventListener('mouseleave', end);
+
+        canvas.addEventListener('touchstart', start, {passive:false});
+        canvas.addEventListener('touchmove', move, {passive:false});
+        canvas.addEventListener('touchend', end, {passive:false});
+      });
+    }
+
+    function limpiarCanvas(canvasId) {
+      const canvas = document.getElementById(canvasId);
+      if(canvas) {
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+    }
+
+    function generar() {
+      const curso = document.getElementById('curso').value;
+      const mes = document.getElementById('mes').value;
+      const cantidad = parseInt(document.getElementById('numProblemas').value, 10);
+
+      const lista = DB[curso]?.[mes];
+      if (!lista || lista.length === 0) {
+        document.getElementById('resultado').innerHTML =
+          `<div class="bg-red-50 border-2 border-red-200 rounded-2xl p-6 text-center">
+            <p class="text-red-600 font-bold text-lg">❌ No hay problemas para esta selección.</p>
+          </div>`;
+        return;
+      }
+
+      const clave = `${curso}-${mes}`;
+      if (!usados[clave]) usados[clave] = [];
+
+      const disponibles = lista.filter(p => !usados[clave].includes(p.id));
+      if (disponibles.length === 0) {
+        document.getElementById('resultado').innerHTML =
+          `<div class="bg-yellow-50 border-2 border-yellow-300 rounded-2xl p-6 text-center">
+            <p class="text-yellow-800 font-bold text-lg">⚠️ Ya se han usado todos los problemas de este mes para este curso.</p>
+            <p class="text-yellow-700 mt-2">No se repetirán jamás según la configuración actual.</p>
+          </div>`;
+        return;
+      }
+
+      const elegidos = [...disponibles].sort(() => Math.random() - 0.5).slice(0, Math.min(cantidad, disponibles.length));
+
+      usados[clave].push(...elegidos.map(e => e.id));
+      localStorage.setItem(LS_KEY, JSON.stringify(usados));
+
+      const bloques = elegidos.map((p, i) => {
+        const texto = personalizarEnunciado(p.t);
+        const idBase = `problema-${i}`;
+        return `
+        <div class="problem-card bg-white rounded-3xl shadow-xl p-8 mb-8 border-2 border-purple-100">
+          <div class="flex items-center justify-between mb-6">
+            <h3 class="text-3xl font-bold text-purple-600">🎯 Problema ${i+1}</h3>
+            <span class="text-sm text-gray-500 bg-gray-100 px-4 py-2 rounded-full">ID: ${p.id}</span>
+          </div>
+          
+          <div class="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-2xl p-6 mb-8 border-2 border-purple-200">
+            <p class="text-xl leading-relaxed text-gray-800">${texto}</p>
+          </div>
+
+          <div class="space-y-6">
+            <!-- Paso 1 -->
+            <div class="bg-blue-50 rounded-xl p-5 border-l-4 border-blue-500">
+              <div class="flex items-center mb-3">
+                <span class="step-number">1</span>
+                <p class="font-bold text-lg text-gray-800">Lee el problema con atención</p>
+              </div>
+              <p class="text-gray-600 ml-10">Asegúrate de entender qué te están preguntando.</p>
+            </div>
+
+            <!-- Paso 2 -->
+            <div class="bg-green-50 rounded-xl p-5 border-l-4 border-green-500">
+              <div class="flex items-center mb-3">
+                <span class="step-number">2</span>
+                <p class="font-bold text-lg text-gray-800">Identifica la información importante</p>
+              </div>
+              <p class="text-gray-600 ml-10 mb-3">Escribe los datos clave y haz dibujos si te ayuda.</p>
+              <div class="canvas-container">
+                <canvas id="${idBase}-canvas-2" data-draw width="1200" height="300" class="w-full rounded-lg"></canvas>
+                <button onclick="limpiarCanvas('${idBase}-canvas-2')" class="mt-3 bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition text-sm font-semibold">
+                  🗑️ Borrar
+                </button>
+              </div>
+            </div>
+
+            <!-- Paso 3 -->
+            <div class="bg-yellow-50 rounded-xl p-5 border-l-4 border-yellow-500">
+              <div class="flex items-center mb-3">
+                <span class="step-number">3</span>
+                <p class="font-bold text-lg text-gray-800">Planifica la estrategia de solución</p>
+              </div>
+              <p class="text-gray-600 ml-10 mb-3">¿Qué operaciones necesitas? ¿Suma, resta, multiplicación, división?</p>
+              <div class="canvas-container">
+                <canvas id="${idBase}-canvas-3" data-draw width="1200" height="300" class="w-full rounded-lg"></canvas>
+                <button onclick="limpiarCanvas('${idBase}-canvas-3')" class="mt-3 bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition text-sm font-semibold">
+                  🗑️ Borrar
+                </button>
+              </div>
+            </div>
+
+            <!-- Paso 4 -->
+            <div class="bg-purple-50 rounded-xl p-5 border-l-4 border-purple-500">
+              <div class="flex items-center mb-3">
+                <span class="step-number">4</span>
+                <p class="font-bold text-lg text-gray-800">Realiza las operaciones</p>
+              </div>
+              <p class="text-gray-600 ml-10 mb-3">Calcula paso a paso y con cuidado.</p>
+              <div class="canvas-container">
+                <canvas id="${idBase}-canvas-4" data-draw width="1200" height="350" class="w-full rounded-lg"></canvas>
+                <button onclick="limpiarCanvas('${idBase}-canvas-4')" class="mt-3 bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition text-sm font-semibold">
+                  🗑️ Borrar
+                </button>
+              </div>
+            </div>
+
+            <!-- Paso 5 -->
+            <div class="bg-pink-50 rounded-xl p-5 border-l-4 border-pink-500">
+              <div class="flex items-center mb-3">
+                <span class="step-number">5</span>
+                <p class="font-bold text-lg text-gray-800">Verifica la respuesta</p>
+              </div>
+              <p class="text-gray-600 ml-10 mb-3">¿La respuesta tiene sentido? ¿Responde a la pregunta?</p>
+              <div class="canvas-container">
+                <canvas id="${idBase}-canvas-5" data-draw width="1200" height="250" class="w-full rounded-lg"></canvas>
+                <button onclick="limpiarCanvas('${idBase}-canvas-5')" class="mt-3 bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition text-sm font-semibold">
+                  🗑️ Borrar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>`;
+      }).join('');
+
+      document.getElementById('resultado').innerHTML = bloques;
+      
+      // Pequeño delay para asegurar que los canvas estén en el DOM
+      setTimeout(() => {
+        activarDibujo();
+      }, 100);
+    }
+
+    document.getElementById('btnGenerar').addEventListener('click', generar);
+    
+    // Función global para limpiar canvas
+    window.limpiarCanvas = limpiarCanvas;
+  </script>
 </body>
 </html>
