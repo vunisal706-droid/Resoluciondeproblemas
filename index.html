@@ -114,11 +114,19 @@
       </div>
 
       <!-- Botón Generar -->
-      <div class="text-center">
+      <div class="text-center space-y-4">
         <button id="btnGenerar" class="btn-primary text-white px-16 py-6 rounded-2xl font-bold text-2xl shadow-2xl transform hover:scale-105 transition-all">
           <span class="text-3xl mr-3">🎯</span>
           Generar Problemas
         </button>
+        
+        <div>
+          <button id="btnResetear" class="bg-red-500 hover:bg-red-600 text-white px-8 py-3 rounded-xl font-semibold text-lg shadow-lg transform hover:scale-105 transition-all">
+            <span class="text-xl mr-2">🔄</span>
+            Resetear Problemas Usados
+          </button>
+          <p class="text-sm text-gray-600 mt-2">Usa este botón si ya no te genera problemas nuevos</p>
+        </div>
       </div>
     </div>
 
@@ -428,9 +436,32 @@
 
     function personalizarEnunciado(base) {
       const nombres = ["Ana","Luis","María","Pedro","Sara","David","Lucía","Carlos","Pablo","Nora","Hugo","Carmen","Javier","Elena","Diego"];
-      const n1 = Math.floor(Math.random() * 15) + 3;
-      const n2 = Math.floor(Math.random() * 15) + 3;
       const nombre = nombres[Math.floor(Math.random() * nombres.length)];
+      
+      let n1, n2;
+      
+      // Detectar si es un problema de resta (palabras clave: quedan, gasta, regala, se come, se escapan, venden, saca)
+      const esResta = /quedan|queda|gasta|regala|se come|se escapan|escapan|venden|vende|saca/i.test(base);
+      
+      // Detectar si es un problema de división (palabras clave: reparte, entre)
+      const esDivision = /reparte.*entre|divide.*entre/i.test(base);
+      
+      if (esResta) {
+        // Para restas: n1 debe ser mayor que n2 (mínimo 5 de diferencia para que tenga sentido)
+        n1 = Math.floor(Math.random() * 15) + 10; // n1 entre 10 y 24
+        n2 = Math.floor(Math.random() * (n1 - 5)) + 2; // n2 entre 2 y (n1-5), asegurando que quede algo
+      } else if (esDivision) {
+        // Para divisiones: n2 será el divisor (entre 2 y 6)
+        n2 = Math.floor(Math.random() * 5) + 2; // n2 entre 2 y 6
+        // n1 será un múltiplo de n2 para que la división sea exacta
+        const multiplicador = Math.floor(Math.random() * 8) + 2; // multiplicador entre 2 y 9
+        n1 = n2 * multiplicador;
+      } else {
+        // Para sumas y multiplicaciones: números normales
+        n1 = Math.floor(Math.random() * 15) + 3; // entre 3 y 17
+        n2 = Math.floor(Math.random() * 15) + 3; // entre 3 y 17
+      }
+      
       return base
         .replace(/n1/g, n1)
         .replace(/n2/g, n2)
@@ -632,6 +663,14 @@
     }
 
     document.getElementById('btnGenerar').addEventListener('click', generar);
+    
+    document.getElementById('btnResetear').addEventListener('click', () => {
+      if(confirm('¿Estás seguro de que quieres resetear todos los problemas usados? Esto permitirá que vuelvan a aparecer problemas que ya has visto.')) {
+        localStorage.removeItem(LS_KEY);
+        usados = {};
+        alert('✅ Problemas reseteados correctamente. Ahora puedes generar cualquier problema de nuevo.');
+      }
+    });
     
     // Función global para limpiar canvas
     window.limpiarCanvas = limpiarCanvas;
