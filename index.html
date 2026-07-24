@@ -227,6 +227,18 @@ function mesActual(){
 }
 let mes=mesActual();
 
+/* ── Aceptar curso y mes desde la URL (enlace desde Ágora Capitulaciones) ── */
+try{
+  const _q = new URLSearchParams(location.search);
+  const _c = _q.get('curso');
+  if(_c && CURSOS.includes(_c)){
+    curso = _c;
+    try{ localStorage.setItem('gp_curso', _c); }catch(e){}
+  }
+  const _m = (_q.get('mes')||'').toLowerCase();
+  if(_m && MESES.includes(_m)) mes = _m;
+}catch(e){}
+
 /* ── NÚMEROS CON SENTIDO ── */
 function ri(a,b){return Math.floor(Math.random()*(b-a+1))+a}
 function numeros(p){
