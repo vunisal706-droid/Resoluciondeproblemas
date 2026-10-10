@@ -1,4 +1,4 @@
-const CACHE_NAME = 'problemas-matematicos-v2';
+const CACHE_NAME = 'problemas-matematicos-v2-b2610102005';
 const urlsToCache = [
   '/',
   '/index.html',
